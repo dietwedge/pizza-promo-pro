@@ -15,4 +15,6 @@ Edit `site-config.js` to change the founding price, planned regular price, licen
 - Netlify: choose this `website` directory as the site base; `netlify.toml` supplies the publish and security-header configuration.
 - Any static host: upload the contents of this directory as-is.
 
+Current production deployment: `https://pizzapromopro.vercel.app/`
+
 Before production launch, replace the placeholder checkout settings, add the canonical production URL to the metadata, and use final product screenshots or video if desired.

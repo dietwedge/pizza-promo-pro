@@ -311,3 +311,16 @@ Review:
 - The founding license remains the page’s only purchase action; later license tiers provide price context without creating choice paralysis.
 - License ownership and update terms are visible beside the price and repeated in plain-English FAQs.
 - The revised page scored 86/100 in the CRO audit and passed desktop and 390px mobile visual inspection.
+
+## Vercel landing-page deployment
+
+- [x] Create and link the `pizzapromopro` Vercel project.
+- [x] Deploy the validated static landing page to production.
+- [x] Add canonical metadata and production security headers.
+- [x] Redeploy and verify the final alias, HTTPS response, metadata, and headers.
+
+Review:
+
+- The production site is live at `https://pizzapromopro.vercel.app/` under the requested Vercel project name.
+- The final alias returns HTTP 200 with the correct canonical URL, content security policy, referrer policy, and MIME-sniffing protection.
+- Local Vercel credentials and project metadata remain excluded from source control.
