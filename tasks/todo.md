@@ -400,3 +400,20 @@ Review:
 - Completed files are downloaded into protected app storage, checksummed, linked to generation jobs, and exposed through a contained local review action. Content moves to `ready_for_review`, never approved or published.
 - Real, non-billable catalog and cost commands were verified against the connected account. Automated tests never submit paid jobs; the first billed end-to-end proof remains an explicit user action in the installed app.
 - Production dependency audit reports zero vulnerabilities. Type checks, lint, 54 automated tests, the Electron smoke test, and Windows packaging pass.
+## Stage thirteen — flexible Higgsfield model selection
+
+- [x] Discover and normalize the live Higgsfield image/video catalog without exposing unsupported model types.
+- [x] Build validated generation profiles from each selected model's declared parameters.
+- [x] Add recommended, budget, and specialist choices including Nano Banana and Kling where available.
+- [x] Require the selected model to remain identical between cost approval and generation.
+- [x] Add a clear model picker with use-case guidance and live credit estimates.
+- [x] Expand contracts, service tests, UI tests, and security documentation.
+- [x] Run all verification gates, package the Windows installer, and publish the completed stage.
+
+Review:
+
+- The authenticated live catalog currently exposes all ten supported choices: five image and five video models. Models absent from a future provider catalog automatically disappear from the picker.
+- Recommended, budget, and specialist labels explain the tradeoff without pretending that one model is best for every job. Each selection includes a concise use-case description and output profile.
+- Live non-billable checks confirmed materially cheaper defaults for iteration: Nano Banana 2 Lite at 1 credit, Z Image at 0.15, Kling 3.0 Turbo at 7.5, and Seedance 1.5 Pro at 4.8 for the tested briefs and profiles. The UI always displays a fresh estimate because provider pricing can change.
+- Model IDs remain allowlisted at IPC, model-specific formats are enforced, a changed selection clears approval, and generation rechecks the chosen profile's cost before spending.
+- Type checks, lint, 55 automated tests, the Electron smoke test, Windows packaging, and the production dependency audit all pass. The audit reports zero vulnerabilities.

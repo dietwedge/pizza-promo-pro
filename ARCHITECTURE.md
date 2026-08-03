@@ -49,7 +49,7 @@ Modules separate domain logic, persistence, IPC handlers, and UI concerns. Cross
 
 ## Provider interfaces
 
-`MediaGenerationProvider` is provider-neutral. The mock provider remains available for deterministic testing. The supervised Higgsfield path uses fixed catalog-backed GPT Image 2 and Seedance 2.0 profiles, obtains a live credit estimate, requires an explicit maximum-credit confirmation, then runs the official CLI and downloads the result into application-controlled storage. Jobs and outputs use the existing persistence tables and always return content to human review. The advanced Streamable HTTP client remains discovery-only and never executes custom MCP tools.
+`MediaGenerationProvider` is provider-neutral. The mock provider remains available for deterministic testing. The supervised Higgsfield path intersects a curated, validated set of image and video profiles with the provider's live model catalog. GPT Image 2 and Seedance 2.0 remain quality defaults, while Nano Banana, Z Image, Kling, Seedance 1.5, and Veo Lite provide budget and specialist choices. A model or format change invalidates the prior estimate; generation re-estimates the exact selected profile before running the official CLI and downloading the result into application-controlled storage. Jobs and outputs use the existing persistence tables and always return content to human review. The advanced Streamable HTTP client remains discovery-only and never executes custom MCP tools.
 
 `SocialPublisher` is provider-neutral, with one future adapter per platform. Milestone one supplies `MockSocialPublisher`. Publishing requires approval by default, an idempotency key, and a persisted attempt/result record.
 

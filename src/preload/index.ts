@@ -26,6 +26,7 @@ const allowedChannels = new Set<IpcChannel>([
   'content:transition',
   'content:updateVariant',
   'media:generateForContent',
+  'media:listHiggsfieldModels',
   'media:estimateHiggsfield',
   'media:generateHiggsfield',
   'media:openForReview',

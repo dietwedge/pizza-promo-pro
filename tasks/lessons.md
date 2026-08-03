@@ -9,3 +9,8 @@
 - Optional form fields often arrive as empty strings rather than `undefined`. Omit blank optional values in the renderer and normalize them at the validated IPC boundary so the UI label and runtime behavior agree.
 - Pizza Promo Pro is permanently a native Electron desktop product. Do not recommend a browser app, PWA, hosted trial, or web fallback as a way around Windows distribution constraints; solve sales, licensing, signing, and updates within the desktop strategy.
 - Long-running Settings actions must show progress and their final result beside the initiating control. A banner above the current scroll position makes a working action appear broken.
+## 2026-08-03 — Do not turn provider defaults into product restrictions
+
+- A recommended AI model is a starting choice, not an exclusive allowlist, when the connected provider offers multiple useful and lower-cost options.
+- For customer-funded generation, expose compatible models with live pricing and task guidance while retaining strict validation, explicit spend approval, and review controls.
+- Separate “recommended default” from “available choice” in both architecture and UI copy.

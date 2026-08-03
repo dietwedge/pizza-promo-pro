@@ -25,7 +25,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md), [DATABASE.md](DATABASE.md), and [SECURIT
 
 - Customer-owned AI providers, Ollama, supervised chat, and grounded content production
 - Secure organic social setup, official Higgsfield browser login and workspace selection, plus advanced custom MCP verification
-- Supervised Higgsfield image/video generation with live credit estimates, explicit spend confirmation, protected local downloads, and human review
+- Supervised Higgsfield image/video generation with a live model catalog, quality and budget choices, live credit estimates, explicit spend confirmation, protected local downloads, and human review
 - Persistent scheduling with supervised mock publishing and retry history
 - Platform proofing desk with editable variants, character counters, factual-risk warnings, and approval locks
 - Unified organic and paid performance reporting with source, freshness, spend, conversion, and return labels

@@ -70,7 +70,8 @@ describe('desktop app shell', () => {
       if(channel==='app:getInfo')return {ok:true,data:{name:'Pizza Promo Pro',version:'0.1.0',online:true,platform:'test'}}
       if(channel==='onboarding:getStatus')return {ok:true,data:{shouldShow:false,dismissed:true,completionPercent:100,essentialComplete:true,steps:[]}}
       if(channel==='content:listStudio')return {ok:true,data:[item]}
-      if(channel==='media:estimateHiggsfield')return {ok:true,data:{provider:'higgsfield',kind:'image',model:'gpt_image_2',modelLabel:'GPT Image 2',aspectRatio:'1:1',credits:7,settings:{}}}
+      if(channel==='media:listHiggsfieldModels')return {ok:true,data:{models:[{id:'gpt_image_2',label:'GPT Image 2',kind:'image',recommendation:'recommended',bestFor:'Polished promotions and readable text.',supportedAspects:['1:1','4:5','9:16','16:9'],outputSummary:'high quality · 2K'},{id:'nano_banana_2_lite',label:'Nano Banana 2 Lite',kind:'image',recommendation:'budget',bestFor:'Fast lower-cost drafts.',supportedAspects:['1:1','4:5','9:16','16:9'],outputSummary:'fast · 1K'},{id:'kling3_0_turbo',label:'Kling 3.0 Turbo',kind:'video',recommendation:'budget',bestFor:'Fast social clips.',supportedAspects:['1:1','9:16','16:9'],outputSummary:'5 seconds · 720p'}]}}
+      if(channel==='media:estimateHiggsfield')return {ok:true,data:{provider:'higgsfield',kind:'image',model:'gpt_image_2',modelLabel:'GPT Image 2',aspectRatio:'1:1',credits:7,settings:{},outputSummary:'high quality · 2K'}}
       if(channel==='media:generateHiggsfield')return {ok:true,data:{status:'completed',requiresReview:true}}
       return {ok:true,data:[]}
     })
@@ -78,11 +79,15 @@ describe('desktop app shell', () => {
     render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
     fireEvent.click(screen.getByRole('button',{name:'Content'}))
     fireEvent.click(await screen.findByRole('button',{name:'Create with Higgsfield'}))
+    expect(await screen.findByRole('option',{name:'Nano Banana 2 Lite · Budget'})).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Output'),{target:{value:'video'}})
+    expect(screen.getByRole('option',{name:'Kling 3.0 Turbo · Budget'})).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Output'),{target:{value:'image'}})
     expect(screen.queryByRole('button',{name:/Approve prompt/})).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button',{name:'Check Higgsfield cost'}))
     const approve=await screen.findByRole('button',{name:'Approve prompt & use 7 credits'})
     fireEvent.click(approve)
-    await waitFor(()=>expect(invokeMock).toHaveBeenCalledWith('media:generateHiggsfield',expect.objectContaining({contentItemId:item.id,maxCredits:7,confirmSpend:true,confirmReview:true})))
+    await waitFor(()=>expect(invokeMock).toHaveBeenCalledWith('media:generateHiggsfield',expect.objectContaining({contentItemId:item.id,model:'gpt_image_2',maxCredits:7,confirmSpend:true,confirmReview:true})))
   })
 
   it('provides a dedicated supervised AI chat workspace', async () => {

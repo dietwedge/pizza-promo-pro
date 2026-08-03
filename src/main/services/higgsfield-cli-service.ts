@@ -2,6 +2,7 @@ import { app } from 'electron'
 import { execFile } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
+import { higgsfieldModelChoices, type HiggsfieldAspectRatio, type HiggsfieldMediaKind, type HiggsfieldModelChoice, type HiggsfieldModelId } from '../../shared/higgsfield-models'
 
 export type HiggsfieldWorkspace = { id: string; name: string }
 export type HiggsfieldStatus = {
@@ -37,13 +38,37 @@ function parseJson(output: string): unknown {
   return JSON.parse(output.slice(start)) as unknown
 }
 
-export type HiggsfieldGenerationProfile = { kind:'image'|'video'; model:string; settings:Record<string,string|number|boolean> }
+export type HiggsfieldGenerationProfile = { kind:HiggsfieldMediaKind; model:HiggsfieldModelId; settings:Record<string,string|number|boolean> }
 
-export function higgsfieldProfile(kind:'image'|'video',aspectRatio:'1:1'|'4:5'|'9:16'|'16:9'):HiggsfieldGenerationProfile {
-  const normalizedAspect=aspectRatio==='4:5'?'3:4':aspectRatio
-  return kind==='image'
-    ? {kind,model:'gpt_image_2',settings:{aspect_ratio:normalizedAspect,quality:'high',resolution:'2k'}}
-    : {kind,model:'seedance_2_0',settings:{aspect_ratio:normalizedAspect,duration:5,resolution:'720p',mode:'std'}}
+export function higgsfieldProfile(model:HiggsfieldModelId,aspectRatio:HiggsfieldAspectRatio):HiggsfieldGenerationProfile {
+  const choice=higgsfieldModelChoices.find(item=>item.id===model)
+  if(!choice||!choice.supportedAspects.includes(aspectRatio))throw new Error('That format is not supported by the selected Higgsfield model.')
+  const aspect=aspectRatio==='4:5'&&!['nano_banana_flash','nano_banana_2_lite','nano_banana_pro'].includes(model)?'3:4':aspectRatio
+  const settings:Record<string,string|number|boolean>={aspect_ratio:aspect}
+  if(model==='gpt_image_2')Object.assign(settings,{quality:'high',resolution:'2k'})
+  if(model==='nano_banana_flash'||model==='nano_banana_pro')settings.resolution='2k'
+  if(model==='nano_banana_2_lite')Object.assign(settings,{resolution:'1k',thinking:'HIGH'})
+  if(model==='seedance_2_0')Object.assign(settings,{duration:5,resolution:'720p',mode:'std'})
+  if(model==='kling3_0_turbo')Object.assign(settings,{duration:5,resolution:'720p'})
+  if(model==='kling3_0')Object.assign(settings,{duration:5,mode:'std',sound:'on'})
+  if(model==='seedance1_5')Object.assign(settings,{duration:4,resolution:'720p',generate_audio:true})
+  if(model==='veo3_1_lite')Object.assign(settings,{duration:4,generate_audio:false})
+  return {kind:choice.kind,model,settings}
+}
+
+export function parseHiggsfieldModelCatalog(value:unknown):Array<{display_name:string;job_type:string;type:string}>{
+  if(!Array.isArray(value))return []
+  return value.flatMap(item=>{
+    if(!item||typeof item!=='object')return []
+    const record=item as Record<string,unknown>
+    return typeof record.display_name==='string'&&typeof record.job_type==='string'&&typeof record.type==='string'?[{display_name:record.display_name,job_type:record.job_type,type:record.type}]:[]
+  })
+}
+
+export async function listSupportedHiggsfieldModels():Promise<HiggsfieldModelChoice[]>{
+  const result=await run(['model','list','--json'])
+  const available=new Set(parseHiggsfieldModelCatalog(parseJson(result.stdout)).map(item=>item.job_type))
+  return higgsfieldModelChoices.filter(item=>available.has(item.id))
 }
 
 export function buildHiggsfieldGenerationArgs(command:'cost'|'create',prompt:string,profile:HiggsfieldGenerationProfile):string[]{

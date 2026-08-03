@@ -30,10 +30,11 @@ describe('IPC contracts', () => {
   })
 
   it('requires explicit Higgsfield spend and review confirmation',()=>{
-    const input={contentItemId:crypto.randomUUID(),prompt:'Approved visual brief for a pizza special',kind:'image',aspectRatio:'1:1',maxCredits:7,confirmSpend:true,confirmReview:true}
+    const input={contentItemId:crypto.randomUUID(),prompt:'Approved visual brief for a pizza special',model:'nano_banana_2_lite',aspectRatio:'1:1',maxCredits:7,confirmSpend:true,confirmReview:true}
     expect(ipcContracts['media:generateHiggsfield'].request.parse(input)).toEqual(input)
     expect(()=>ipcContracts['media:generateHiggsfield'].request.parse({...input,confirmSpend:false})).toThrow()
     expect(()=>ipcContracts['media:generateHiggsfield'].request.parse({...input,confirmReview:false})).toThrow()
+    expect(()=>ipcContracts['media:generateHiggsfield'].request.parse({...input,model:'untrusted_model'})).toThrow()
   })
 
   it('rejects unknown AI providers and empty chat messages', () => {

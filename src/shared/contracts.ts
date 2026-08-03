@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { higgsfieldModelIds } from './higgsfield-models'
 
 export const contentStatuses = ['idea', 'draft', 'media_generation', 'ready_for_review', 'approved', 'scheduled', 'published', 'failed', 'archived'] as const
 export const contentStatusSchema = z.enum(contentStatuses)
@@ -49,6 +50,9 @@ export const updateStatusSchema = z.object({
   currentVersion: z.string(), availableVersion: z.string().nullable(), progressPercent: z.number().min(0).max(100).nullable(), message: z.string()
 })
 export const higgsfieldAccountStatusSchema = z.object({ state:z.enum(['signed_out','needs_workspace','ready','error']),installed:z.boolean(),message:z.string(),workspaces:z.array(z.object({id:z.string(),name:z.string()})),selectedWorkspaceId:z.string().optional() })
+const higgsfieldModelIdSchema=z.enum(higgsfieldModelIds)
+const higgsfieldAspectSchema=z.enum(['1:1','4:5','9:16','16:9'])
+const higgsfieldModelChoiceSchema=z.object({id:higgsfieldModelIdSchema,label:z.string(),kind:z.enum(['image','video']),recommendation:z.enum(['recommended','budget','specialist']),bestFor:z.string(),supportedAspects:z.array(higgsfieldAspectSchema),outputSummary:z.string()})
 export const resultSchema = <T extends z.ZodType>(data: T) => z.discriminatedUnion('ok', [
   z.object({ ok: z.literal(true), data }),
   z.object({ ok: z.literal(false), error: z.object({ code: z.string(), message: z.string() }) })
@@ -79,8 +83,9 @@ export const ipcContracts = {
   'content:transition': { request: z.object({ contentItemId: idSchema, to: contentStatusSchema, notes: z.string().max(500).optional() }), response: recordSchema },
   'content:updateVariant': { request: z.object({ variantId: idSchema, copy: z.string().max(70_000) }), response: z.object({ variant: recordSchema, warnings: z.array(contentWarningSchema) }) },
   'media:generateForContent': { request: z.object({ contentItemId: idSchema, prompt: z.string().trim().min(10).max(3000) }), response: recordSchema },
-  'media:estimateHiggsfield': { request:z.object({prompt:z.string().trim().min(10).max(3000),kind:z.enum(['image','video']),aspectRatio:z.enum(['1:1','4:5','9:16','16:9'])}).strict(),response:z.object({provider:z.literal('higgsfield'),kind:z.enum(['image','video']),model:z.string(),modelLabel:z.string(),aspectRatio:z.string(),credits:z.number().nonnegative(),settings:recordSchema}) },
-  'media:generateHiggsfield': { request:z.object({contentItemId:idSchema,prompt:z.string().trim().min(10).max(3000),kind:z.enum(['image','video']),aspectRatio:z.enum(['1:1','4:5','9:16','16:9']),maxCredits:z.number().positive().max(10000),confirmSpend:z.literal(true),confirmReview:z.literal(true)}).strict(),response:recordSchema },
+  'media:listHiggsfieldModels': {request:z.object({}).strict(),response:z.object({models:z.array(higgsfieldModelChoiceSchema)})},
+  'media:estimateHiggsfield': { request:z.object({prompt:z.string().trim().min(10).max(3000),model:higgsfieldModelIdSchema,aspectRatio:higgsfieldAspectSchema}).strict(),response:z.object({provider:z.literal('higgsfield'),kind:z.enum(['image','video']),model:higgsfieldModelIdSchema,modelLabel:z.string(),aspectRatio:z.string(),credits:z.number().nonnegative(),settings:recordSchema,outputSummary:z.string()}) },
+  'media:generateHiggsfield': { request:z.object({contentItemId:idSchema,prompt:z.string().trim().min(10).max(3000),model:higgsfieldModelIdSchema,aspectRatio:higgsfieldAspectSchema,maxCredits:z.number().positive().max(10000),confirmSpend:z.literal(true),confirmReview:z.literal(true)}).strict(),response:recordSchema },
   'media:openForReview': {request:z.object({mediaAssetId:idSchema}).strict(),response:z.object({opened:z.literal(true)})},
   'agent:producePackage': { request: z.object({ objective: z.string().trim().min(10).max(2000), platforms: z.array(socialPlatformSchema).min(1) }), response: recordSchema },
   'ai:getConfig': { request: z.object({}), response: z.object({ provider:z.enum(['local_mock','openai','openai_compatible','ollama']),model:z.string(),endpoint:z.string(),hasApiKey:z.boolean(),liveEnabled:z.boolean(),updatedAt:z.number() }) },
