@@ -40,6 +40,8 @@ No live credentials are required in milestone one. Future provider credentials a
 
 The connection center stores encrypted tokens in `credentials.secure.json` under Electron's user-data directory. The file contains only `safeStorage` ciphertext, is written atomically, is excluded from backup bundles, and is never exposed through IPC. Social account metadata and the Higgsfield endpoint are stored separately from credentials.
 
+Official Higgsfield account authentication is delegated to Higgsfield's bundled CLI using OAuth 2.0 PKCE. Pizza Promo Pro executes only login, workspace-list, workspace-select, and account-status commands with fixed arguments and bounded output. It never invokes the CLI token command, reads Higgsfield's credential file, or exposes OAuth credentials to the renderer.
+
 Customer-owned AI keys use the same credential vault. AI requests run only from the main process with validated HTTPS or localhost endpoints, bounded timeouts, and redirects disabled. Chat receives a factual context package and has no IPC capability for approval, scheduling, publishing, filesystem access, or credentials.
 
 ## Publishing safeguards

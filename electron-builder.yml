@@ -10,6 +10,8 @@ files:
   - node_modules/**
 
 asar: true
+asarUnpack:
+  - node_modules/@higgsfield/cli/vendor/**
 
 win:
   target:

@@ -26,6 +26,9 @@ test('launches the desktop application and renders its first window', async () =
     const bridge = await window.evaluate(() => ({ available: typeof (globalThis as unknown as { pizzaSocial?: { invoke?: unknown } }).pizzaSocial?.invoke === 'function' }))
     expect(bridge.available).toBe(true)
     await expect(window.getByText('Desktop connection unavailable')).toHaveCount(0)
+    await window.getByRole('button',{name:'Settings'}).click()
+    await expect(window.getByRole('heading',{name:'Higgsfield account'})).toBeVisible()
+    await expect(window.getByRole('button',{name:'Sign in with Higgsfield'})).toBeVisible()
 
     const appPath = await electronApp.evaluate(({ app }) => app.getAppPath())
     expect(appPath).toBeTruthy()

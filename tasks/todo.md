@@ -360,3 +360,22 @@ Review:
 - The button now immediately changes to a disabled `Checking…` state with a spinner, and the progress or final server response appears directly below the MCP form.
 - The result is announced through an accessible live status and is no longer duplicated in the page-level banner.
 - Type checks, lint, 47 automated tests, the Electron smoke test, and Windows packaging pass.
+
+## Stage eleven — official Higgsfield account connection
+
+- [x] Replace the customer-facing MCP URL/token setup with official Higgsfield browser login.
+- [x] Bundle the official cross-platform Higgsfield connector with the desktop application.
+- [x] Detect signed-out, expired-session, missing-workspace, and ready states without exposing tokens.
+- [x] Let the customer select a Higgsfield billing workspace inside Settings.
+- [x] Keep generic remote MCP configuration available only as an advanced integration.
+- [x] Add narrow IPC contracts, safe process execution, UI coverage, and connector parsing tests.
+- [x] Run all verification gates, document the connection model, and package the Windows installer.
+
+Review:
+
+- Settings now leads with an official Higgsfield account card and browser-based OAuth login; customers are no longer asked to find an API key.
+- The MIT-licensed official Higgsfield CLI is pinned and bundled for Windows, macOS, and Linux, with its native executable unpacked for the installed app.
+- Pizza Promo Pro calls only account status, browser login, workspace listing, and workspace selection. It never invokes `auth token`, reads Higgsfield's credential file, or sends credentials through IPC.
+- Signed-out, expired, workspace-required, ready, and connector-error states are represented explicitly. The existing URL/token MCP client remains available as an advanced custom-server integration.
+- The packaged Windows connector was executed directly and correctly reported the current signed-out state with the browser-login instruction.
+- Production dependency audit reports zero vulnerabilities. Type checks, lint, 50 automated tests, the Settings-aware Electron smoke test, and Windows packaging pass.

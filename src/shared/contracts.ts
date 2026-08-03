@@ -48,6 +48,7 @@ export const updateStatusSchema = z.object({
   state: z.enum(['idle', 'checking', 'available', 'downloading', 'downloaded', 'up_to_date', 'error', 'unavailable']),
   currentVersion: z.string(), availableVersion: z.string().nullable(), progressPercent: z.number().min(0).max(100).nullable(), message: z.string()
 })
+export const higgsfieldAccountStatusSchema = z.object({ state:z.enum(['signed_out','needs_workspace','ready','error']),installed:z.boolean(),message:z.string(),workspaces:z.array(z.object({id:z.string(),name:z.string()})),selectedWorkspaceId:z.string().optional() })
 export const resultSchema = <T extends z.ZodType>(data: T) => z.discriminatedUnion('ok', [
   z.object({ ok: z.literal(true), data }),
   z.object({ ok: z.literal(false), error: z.object({ code: z.string(), message: z.string() }) })
@@ -70,6 +71,9 @@ export const ipcContracts = {
   'connections:saveHiggsfield': { request: z.object({ endpoint: z.string().url().max(2048), accessToken: optionalAccessTokenSchema }), response: connectionSchema },
   'connections:remove': { request: z.object({ id: z.string().min(1).max(200), kind: z.enum(['social', 'higgsfield_mcp']) }), response: z.object({ removed: z.boolean() }) },
   'connections:check': { request: z.object({ id: z.string().min(1).max(200), kind: z.enum(['social', 'higgsfield_mcp']) }), response: z.object({ valid: z.boolean(), message: z.string(), liveVerified: z.boolean(), serverName: z.string().optional(), serverVersion: z.string().optional(), protocolVersion: z.string().optional(), toolCount: z.number().int().nonnegative().optional() }) },
+  'higgsfield:getStatus': { request:z.object({}).strict(), response:higgsfieldAccountStatusSchema },
+  'higgsfield:connect': { request:z.object({}).strict(), response:higgsfieldAccountStatusSchema },
+  'higgsfield:selectWorkspace': { request:z.object({workspaceId:z.string().trim().min(1).max(200)}).strict(), response:higgsfieldAccountStatusSchema },
   'content:listStudio': { request: z.object({}), response: z.array(recordSchema) },
   'content:createDraft': { request: z.object({ title: z.string().trim().min(3).max(140), brief: z.string().trim().min(10).max(2000), menuItemId: idSchema.optional(), promotionId: idSchema.optional(), platforms: z.array(socialPlatformSchema).min(1) }), response: recordSchema },
   'content:transition': { request: z.object({ contentItemId: idSchema, to: contentStatusSchema, notes: z.string().max(500).optional() }), response: recordSchema },

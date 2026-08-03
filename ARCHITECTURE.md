@@ -53,7 +53,7 @@ Modules separate domain logic, persistence, IPC handlers, and UI concerns. Cross
 
 `SocialPublisher` is provider-neutral, with one future adapter per platform. Milestone one supplies `MockSocialPublisher`. Publishing requires approval by default, an idempotency key, and a persisted attempt/result record.
 
-Settings includes a provider connection center. Narrow IPC handlers manage sanitized social-account metadata and Higgsfield MCP configuration. Secrets are encrypted in a separate OS-bound credential vault; the renderer receives only whether a secret exists. Higgsfield verification performs an MCP initialization and `tools/list` exchange in the main process with a strict timeout, no redirects, and bounded responses. It never invokes a discovered tool.
+Settings includes a provider connection center. The official Higgsfield CLI is bundled as an unpacked, executable application resource and launched only through fixed, narrowly validated main-process commands. It owns OAuth credentials; Pizza Promo Pro never reads `auth token` or returns credentials through IPC. The app exposes signed-out, workspace-required, and ready states plus workspace IDs/names. Generic remote MCP remains an advanced integration: its secrets use the OS-bound vault and verification performs only initialization and `tools/list`, never tool execution.
 
 `ContentAgent` is a provider-neutral supervised drafting boundary. It receives a main-process factual context containing only saved business, location, menu, promotion, and brand data. Agent output is persisted as `draft`, records its source IDs, and always requires the existing human review transition. The agent has no credential, media-execution, scheduling, approval, or publishing capability.
 

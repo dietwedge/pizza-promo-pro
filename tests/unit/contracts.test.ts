@@ -23,6 +23,12 @@ describe('IPC contracts', () => {
     expect(ipcContracts['connections:saveHiggsfield'].request.parse({ endpoint: 'https://example.com/mcp', accessToken: '' })).toEqual({ endpoint: 'https://example.com/mcp', accessToken: undefined })
   })
 
+  it('validates Higgsfield account actions without accepting credentials',()=>{
+    expect(ipcContracts['higgsfield:getStatus'].request.parse({})).toEqual({})
+    expect(ipcContracts['higgsfield:selectWorkspace'].request.parse({workspaceId:'workspace-1'})).toEqual({workspaceId:'workspace-1'})
+    expect(()=>ipcContracts['higgsfield:connect'].request.parse({accessToken:'secret'})).toThrow()
+  })
+
   it('rejects unknown AI providers and empty chat messages', () => {
     expect(() => ipcContracts['ai:saveConfig'].request.parse({ provider: 'mystery-ai', model: 'x' })).toThrow()
     expect(() => ipcContracts['ai:sendChat'].request.parse({ content: ' ' })).toThrow()

@@ -33,6 +33,8 @@ describe('desktop app shell', () => {
     expect(screen.getByText('Google Business Profile')).toBeVisible()
     expect(screen.getByText('Instagram')).toBeVisible()
     expect(screen.getByText('Higgsfield MCP connection')).toBeVisible()
+    expect(screen.getByText('Higgsfield account')).toBeVisible()
+    expect(screen.getByRole('button',{name:'Sign in with Higgsfield'})).toBeVisible()
     expect(screen.getByText('Live adapters off')).toBeVisible()
     expect(screen.getByText('AI Content Provider')).toBeVisible()
     expect(screen.getByText('Pizza Promo Pro updates')).toBeVisible()

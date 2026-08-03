@@ -21,6 +21,7 @@ import type { adCapabilitySchema, adProviderSchema } from '../../shared/contract
 import { generateSampleAnalytics, getAnalyticsOverview } from './analytics-service'
 import { getOnboardingStatus, setOnboardingDismissed } from './onboarding-service'
 import { checkForAppUpdate, downloadAppUpdate, getUpdateStatus, installAppUpdate } from './update-service'
+import { connectHiggsfield, getHiggsfieldStatus, selectHiggsfieldWorkspace } from './higgsfield-cli-service'
 
 export function registerAppHandlers(): void {
   registerValidatedHandler('app:getInfo', () => ({
@@ -44,6 +45,9 @@ export function registerAppHandlers(): void {
   registerValidatedHandler('connections:saveHiggsfield', (input: { endpoint: string; accessToken?: string }) => saveHiggsfieldConnection(input))
   registerValidatedHandler('connections:remove', ({ id, kind }: { id: string; kind: 'social' | 'higgsfield_mcp' }) => ({ removed: removeConnection(id, kind) }))
   registerValidatedHandler('connections:check', ({ id, kind }: { id: string; kind: 'social' | 'higgsfield_mcp' }) => checkConnection(id, kind))
+  registerValidatedHandler('higgsfield:getStatus', () => getHiggsfieldStatus())
+  registerValidatedHandler('higgsfield:connect', () => connectHiggsfield())
+  registerValidatedHandler('higgsfield:selectWorkspace', ({workspaceId}:{workspaceId:string}) => selectHiggsfieldWorkspace(workspaceId))
   registerValidatedHandler('content:listStudio', () => listContentStudio())
   registerValidatedHandler('content:createDraft', (input: { title: string; brief: string; menuItemId?: string; promotionId?: string; platforms: z.infer<typeof socialPlatformSchema>[] }) => createContentDraft(input))
   registerValidatedHandler('content:transition', ({ contentItemId, to, notes }: { contentItemId: string; to: ContentStatus; notes?: string }) => transitionContent(contentItemId, to, notes))
