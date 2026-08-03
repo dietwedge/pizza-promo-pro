@@ -52,6 +52,10 @@ Use the package scripts defined in `package.json` for development, type checking
 
 Automated tests must use mock providers and must never call live social or media-generation APIs.
 
+## Sales landing page
+
+The dependency-free sales site lives in `website/`. It is separate from the native Electron product and can be deployed to any static host. Set the one-time price and Square Payment Link in `website/site-config.js`; see `website/README.md` for preview and deployment instructions.
+
 ## Supported targets
 
 - Windows x64: NSIS

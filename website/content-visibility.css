@@ -1,0 +1,7 @@
+/* Content is fully legible before interaction and when scripting is unavailable. */
+.feature,
+.workflow-list li,
+.purchase-card {
+  opacity: 1;
+  transform: none;
+}

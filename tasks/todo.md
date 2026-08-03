@@ -282,3 +282,18 @@ Review:
 - The public repository is live at `https://github.com/dietwedge/pizza-promo-pro` with `main` as its default branch.
 - Local credentials, databases, installers, dependencies, compiled output, and test artifacts are excluded from Git.
 - `origin/main` tracking is configured and the initial desktop-installer workflow started successfully.
+
+## Sales landing page — first design pass
+
+- [x] Establish the conversion argument, headline set, and distinctive visual direction.
+- [x] Build a responsive, accessible static landing page isolated from the Electron application.
+- [x] Add honest product presentation, one-time-purchase positioning, FAQs, and Square-ready CTA configuration.
+- [x] Add SEO, social metadata, structured data, performance safeguards, and easy deployment configuration.
+- [x] Run mechanical CRO, HTML/accessibility, responsive visual, and deployment verification.
+
+Review:
+
+- The “content prep line” direction uses operational tickets, a real product workflow, hard black type, and Italian green/red without generic AI imagery or invented proof.
+- The selected headline scored 66/100 in the required mechanical scorer; the complete page scored 83/100 in the CRO audit.
+- Desktop and 390px mobile renders were visually inspected, the local site returned HTTP 200, and core content remains legible without scroll interaction or JavaScript.
+- Square pricing and checkout are configured centrally in `website/site-config.js`; no product claim, testimonial, price, or performance statistic was invented.
