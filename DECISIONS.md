@@ -50,7 +50,7 @@ Imported and generated media is copied into managed directories under Electron's
 
 **Status:** Accepted
 
-Media generation and social publishing are accessed through `MediaGenerationProvider` and `SocialPublisher` interfaces. Milestone one implements only `MockMediaGenerationProvider` and `MockSocialPublisher`. Live Higgsfield and social adapters are deferred and automated tests never use live APIs.
+Media generation and social publishing are accessed through `MediaGenerationProvider` and `SocialPublisher` interfaces. Milestone one implements only `MockMediaGenerationProvider` and `MockSocialPublisher`. The desktop may verify a saved Higgsfield endpoint by initializing MCP and listing tool metadata; it does not call tools. Live Higgsfield generation and social adapters remain deferred, and automated tests never use live APIs.
 
 ## ADR-008: Approval and idempotency by default
 

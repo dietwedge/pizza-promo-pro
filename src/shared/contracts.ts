@@ -69,7 +69,7 @@ export const ipcContracts = {
   'connections:saveSocial': { request: z.object({ platform: socialPlatformSchema, displayName: z.string().trim().min(2).max(120), accountId: z.string().trim().min(1).max(200), accessToken: z.string().max(8000).optional() }), response: connectionSchema },
   'connections:saveHiggsfield': { request: z.object({ endpoint: z.string().url().max(2048), accessToken: optionalAccessTokenSchema }), response: connectionSchema },
   'connections:remove': { request: z.object({ id: z.string().min(1).max(200), kind: z.enum(['social', 'higgsfield_mcp']) }), response: z.object({ removed: z.boolean() }) },
-  'connections:check': { request: z.object({ id: z.string().min(1).max(200), kind: z.enum(['social', 'higgsfield_mcp']) }), response: z.object({ valid: z.boolean(), message: z.string(), liveVerified: z.boolean() }) },
+  'connections:check': { request: z.object({ id: z.string().min(1).max(200), kind: z.enum(['social', 'higgsfield_mcp']) }), response: z.object({ valid: z.boolean(), message: z.string(), liveVerified: z.boolean(), serverName: z.string().optional(), serverVersion: z.string().optional(), protocolVersion: z.string().optional(), toolCount: z.number().int().nonnegative().optional() }) },
   'content:listStudio': { request: z.object({}), response: z.array(recordSchema) },
   'content:createDraft': { request: z.object({ title: z.string().trim().min(3).max(140), brief: z.string().trim().min(10).max(2000), menuItemId: idSchema.optional(), promotionId: idSchema.optional(), platforms: z.array(socialPlatformSchema).min(1) }), response: recordSchema },
   'content:transition': { request: z.object({ contentItemId: idSchema, to: contentStatusSchema, notes: z.string().max(500).optional() }), response: recordSchema },

@@ -4,6 +4,8 @@ import { ElectronCredentialVault } from './credential-vault'
 import { audit } from './data-service'
 import type { z } from 'zod'
 import type { connectionSchema, socialPlatformSchema } from '../../shared/contracts'
+import { app } from 'electron'
+import { verifyMcpEndpoint } from './mcp-http-client'
 
 type Connection = z.infer<typeof connectionSchema>
 type SocialPlatform = z.infer<typeof socialPlatformSchema>
@@ -63,9 +65,18 @@ export function removeConnection(id: string, kind: 'social' | 'higgsfield_mcp'):
   return true
 }
 
-export function checkConnection(id: string, kind: 'social' | 'higgsfield_mcp'): { valid: boolean; message: string; liveVerified: boolean } {
+export async function checkConnection(id: string, kind: 'social' | 'higgsfield_mcp'): Promise<{ valid: boolean; message: string; liveVerified: boolean; serverName?: string; serverVersion?: string; protocolVersion?: string; toolCount?: number }> {
   const item = listConnections().find((connection) => connection.id === id && connection.kind === kind)
   if (!item) return { valid: false, message: 'This connection is not configured.', liveVerified: false }
-  if (kind === 'higgsfield_mcp' && !item.hasSecret) return { valid: true, message: 'Endpoint saved. Add an access token if your MCP server requires one.', liveVerified: false }
-  return { valid: true, message: 'Configuration is complete. Live verification becomes available when the provider adapter is enabled.', liveVerified: false }
+  if (kind !== 'higgsfield_mcp' || !item.endpoint) return { valid: true, message: 'Configuration is complete. Live verification will be added with the social provider adapter.', liveVerified: false }
+  try {
+    const verification = await verifyMcpEndpoint({ endpoint: item.endpoint, token: vault.get(higgsfieldKey), clientVersion: app.getVersion() })
+    const toolLabel = `${verification.toolNames.length} ${verification.toolNames.length === 1 ? 'tool' : 'tools'}`
+    audit('connection.higgsfield.verified', 'app_settings', higgsfieldKey, { host: new URL(item.endpoint).hostname, protocolVersion: verification.protocolVersion, toolCount: verification.toolNames.length })
+    return { valid: true, liveVerified: true, message: `Connected to ${verification.serverName}. ${toolLabel} available; no tools were run.`, serverName: verification.serverName, serverVersion: verification.serverVersion, protocolVersion: verification.protocolVersion, toolCount: verification.toolNames.length }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'The MCP connection could not be verified.'
+    audit('connection.higgsfield.verification_failed', 'app_settings', higgsfieldKey, { host: new URL(item.endpoint).hostname })
+    return { valid: false, liveVerified: false, message }
+  }
 }

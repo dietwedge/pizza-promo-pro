@@ -24,7 +24,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md), [DATABASE.md](DATABASE.md), and [SECURIT
 ## Current product capabilities
 
 - Customer-owned AI providers, Ollama, supervised chat, and grounded content production
-- Secure organic social and Higgsfield MCP connection setup
+- Secure organic social setup plus live Higgsfield MCP handshake and tool discovery
 - Persistent scheduling with supervised mock publishing and retry history
 - Platform proofing desk with editable variants, character counters, factual-risk warnings, and approval locks
 - Unified organic and paid performance reporting with source, freshness, spend, conversion, and return labels
@@ -44,7 +44,7 @@ Live organic publishing and live advertising mutations remain disabled until eac
 - Unit, IPC integration, and Electron smoke tests
 - Cross-platform packaging configuration and CI build matrix
 
-Live Higgsfield generation, OAuth, live social publishing, production analytics, signing, notarization, and automatic release publishing are explicitly out of scope.
+Live Higgsfield tool execution/generation, OAuth, live social publishing, production analytics, signing, and notarization are explicitly out of scope. GitHub Release updates and read-only Higgsfield MCP connection verification are implemented.
 
 ## Development
 

@@ -14,5 +14,6 @@ export default tseslint.config(
     plugins: { 'react-hooks': reactHooks, 'react-refresh': reactRefresh },
     rules: { ...reactHooks.configs.recommended.rules, 'react-refresh/only-export-components': ['warn', { allowConstantExport: true }] }
   },
+  { files: ['website/**/*.js'], languageOptions: { globals: { ...globals.browser } } },
   { files: ['src/main/**/*.ts', 'src/preload/**/*.ts', 'tests/**/*.ts', '*.config.ts'], languageOptions: { globals: { ...globals.node } } }
 )

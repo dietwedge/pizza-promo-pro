@@ -270,6 +270,28 @@ Review:
 - The Settings form no longer sends a blank token, and the IPC boundary independently normalizes blank values for defense in depth.
 - Type checks, lint, 43 automated tests, the Electron smoke test, and Windows packaging pass.
 
+## Stage ten — live Higgsfield MCP verification
+
+- [x] Add a main-process Streamable HTTP client for MCP initialization and tool discovery.
+- [x] Support public endpoints and optional bearer tokens without exposing credentials to the renderer.
+- [x] Enforce endpoint, redirect, timeout, response-size, and protocol validation safeguards.
+- [x] Replace the saved-configuration check with a real server handshake and clear verification result.
+- [x] Show server identity and discovered-tool count in Settings without enabling tool execution.
+- [x] Add transport, contract, and UI regression coverage.
+- [x] Run all verification gates, update documentation, and package the Windows installer.
+
+Safety boundary:
+
+- This stage discovers MCP tools but never calls them. Media generation remains human-initiated and all output continues through review before scheduling or publishing.
+
+Review:
+
+- The Settings connection check now performs a real MCP lifecycle handshake and `tools/list` request against the saved endpoint.
+- Public endpoints work without a token; when present, the OS-encrypted bearer token is read only in Electron's main process.
+- Requests reject redirects, stop after ten seconds, cap responses at one megabyte, validate JSON-RPC/session/protocol details, and report authentication failures clearly.
+- Tool discovery is read-only: no `tools/call` channel or request was added, and regression coverage explicitly proves that no tool is executed.
+- Type checks, lint, 46 automated tests, the Electron smoke test, and Windows packaging pass.
+
 ## Public GitHub repository launch
 
 - [x] Audit the publication set for credentials, local data, generated builds, and private artifacts.
