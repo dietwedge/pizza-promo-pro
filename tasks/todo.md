@@ -435,3 +435,19 @@ Review:
 - Content creation changes the button state, reports the created platform count, highlights the new card, and brings it into view.
 - Draft and review-stage content can be edited with an explicit platform-copy rebuild. Existing content can be deleted only after confirmation; media-generation records cannot be deleted mid-job.
 - Type checks, lint, 61 automated tests, the expanded isolated-profile Electron test, Windows packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.
+## Stage fifteen — Clover menu compatibility
+
+- [x] Reproduce the empty result against the supplied Clover Online Ordering page.
+- [x] Identify the public embedded menu representation without requiring credentials or a paid renderer.
+- [x] Parse Next.js streamed menu payloads with bounded, data-only extraction.
+- [x] Preserve Clover prices as cents, ignore unavailable items, and never invent missing values.
+- [x] Add Clover-shaped parser coverage and retain existing Schema.org and visible-price fallbacks.
+- [x] Verify the supplied public URL returns a reviewable menu preview.
+- [x] Run all verification gates, package, document, commit, and publish.
+
+Review:
+
+- The supplied Clover page embeds its complete menu in a public Next.js streamed payload despite showing a client-rendering bailout marker. No browser execution or Clover credential is necessary.
+- A live, non-mutating proof against the supplied URL returns 85 available items. `Classic Cheese Pizza` is extracted with its full description and a 1,950-cent price.
+- Unavailable entries are omitted, null prices remain unverified, malformed framework payloads are ignored, and the existing Schema.org and visible HTML paths remain intact.
+- Type checks, lint, 62 automated tests, the isolated-profile Electron test, Windows packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.

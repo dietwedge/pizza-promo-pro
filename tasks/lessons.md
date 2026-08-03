@@ -21,3 +21,9 @@
 - One-per-business records such as brand profiles must open the existing record for editing instead of offering a duplicate-create state.
 - A successful action must produce visible feedback and reveal the new result next to the initiating workflow, especially when the result otherwise appears below the fold.
 - Once users can create operational records or content, include edit and delete controls in the same workflow with confirmation for destructive actions.
+
+## 2026-08-03 — Inspect framework payloads before requiring browser rendering
+
+- A page that displays a client-rendering bailout can still contain complete structured application data in streamed framework payloads.
+- For menu import compatibility, inspect standard structured data, embedded framework state, and visible HTML in that order before adding a heavyweight browser or paid scraping dependency.
+- Maintain provider-shaped parser fixtures for storefronts actually encountered by users, while keeping the import preview untrusted and review-only.

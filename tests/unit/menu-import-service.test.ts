@@ -16,4 +16,13 @@ describe('menu page extraction',()=>{
   it('uses a conservative visible-price fallback and removes duplicates',()=>{
     expect(parseMenuPage('<div>Pepperoni Pizza $18.50</div><div>Pepperoni Pizza $18.50</div>')).toEqual([{name:'Pepperoni Pizza',description:'',priceCents:1850,currency:'USD',selected:true}])
   })
+
+  it('extracts available Clover items and cent prices from a Next.js flight payload',()=>{
+    const flight='2c:[["$","component",null,{"merchant":{"defaultCurrency":"USD"},"menu":{"categories":{"PIZZA":{"id":"PIZZA","name":"Pizza","items":["CHEESE","SOLD"]}},"items":[{"id":"CHEESE","name":"Classic Cheese Pizza","itemType":"REGULAR","description":"Detroit-style pan pizza with crispy cheese edges","price":1950,"available":true},{"id":"SOLD","name":"Sold Out Slice","description":"Not available","price":500,"available":false},{"id":"MARKET","name":"Market Price Special","description":null,"price":null,"available":true}]}}]]'
+    const html=`<script>self.__next_f=(self.__next_f||[])</script><script>self.__next_f.push(${JSON.stringify([1,flight])})</script>`
+    expect(parseMenuPage(html)).toEqual([
+      {name:'Classic Cheese Pizza',description:'Detroit-style pan pizza with crispy cheese edges',priceCents:1950,currency:'USD',selected:true},
+      {name:'Market Price Special',description:'',priceCents:null,currency:'USD',selected:true}
+    ])
+  })
 })

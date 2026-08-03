@@ -73,7 +73,7 @@ Content Studio creation returns the newly persisted item, highlights it in the l
 
 ## Menu URL import
 
-The main process fetches public HTTP/HTTPS menu pages only. It rejects embedded credentials, localhost, private/link-local addresses, unsafe redirects, non-HTML/JSON responses, responses above 2 MB, and requests over 15 seconds. Schema.org `MenuItem` and `Product` data is preferred, with a conservative visible-price fallback. Extracted items return as an editable preview, and missing prices remain blank. Only selected items with user-verified prices enter the local menu tables.
+The main process fetches public HTTP/HTTPS menu pages only. It rejects embedded credentials, localhost, private/link-local addresses, unsafe redirects, non-HTML/JSON responses, responses above 2 MB, and requests over 15 seconds. Schema.org `MenuItem` and `Product` data is preferred. For Clover's current Next.js storefront, the parser reads the streamed public `menu` payload without running page code, preserves integer cent prices, and excludes items marked unavailable. A conservative visible-price fallback remains available. Extracted items return as an editable preview, and missing prices remain blank. Only selected items with user-verified prices enter the local menu tables.
 
 ## Local-first behavior
 
