@@ -39,3 +39,9 @@
 - A component-level interaction test can pass while shared editor and browser-default styles collapse labels and textareas into an unusable layout.
 - Every new form pattern must explicitly define label layout, control width, typography, spacing, and responsive behavior instead of relying on inherited form styles.
 - Verify the actual Electron render at the target desktop size before shipping visually significant workflows.
+
+## 2026-08-04 — Operational pages need visible decisions, not passive records
+
+- A review page is not useful merely because it displays editable copy; expose the package-level decision that advances or reverses the workflow.
+- A page named Calendar must provide a calendar-shaped planning view, with the operational queue as supporting detail rather than the entire experience.
+- Treat selects, date fields, and other native controls as one shared design system so new workflows do not fall back to generic browser presentation.

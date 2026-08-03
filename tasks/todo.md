@@ -522,3 +522,21 @@ Review:
 - The interview now presents five numbered, sequential questions with helper copy, consistently sized textareas, responsive stacking, and a clearly separated action footer.
 - The actual Electron render was inspected at 1440 × 940. End-to-end coverage also verifies all five textareas render wider than 350 pixels and taller than 80 pixels.
 - Type checking, linting, 65 automated tests, the Electron end-to-end test, Windows x64 packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.
+
+## Stage twenty — Review, calendar, and control-system polish
+
+- [x] Turn Review Desk into an actionable approve, revise, and schedule workflow.
+- [x] Make each content package’s next action obvious while preserving copy-level proofing.
+- [x] Replace the queue-only Calendar presentation with a useful month view and a structured scheduling panel.
+- [x] Apply a consistent branded select and date-control treatment across the application.
+- [x] Add renderer and Electron regression coverage for the complete review-to-calendar path.
+- [x] Visually inspect the real Electron pages, run all quality gates, package, commit, and publish.
+
+Review:
+
+- Review Desk now presents a visible three-step path—proof copy, approve the package, schedule on Calendar—and gives each draft or review-stage package an explicit next decision.
+- Platform-copy editing and factual warning behavior remain intact. Approved packages become locked and are clearly identified as ready for Calendar.
+- Calendar now combines a focused scheduling panel, a navigable 42-cell month view with platform posts, and a separate operational delivery queue.
+- Selects and date controls now share consistent spacing, borders, focus treatment, disabled states, and custom light/dark dropdown indicators throughout the app.
+- Review Desk and Calendar were visually inspected in the real Electron window at 1440 × 940. The Electron test proves package approval, Calendar availability, month-grid structure, and the non-native select appearance.
+- Type checking, linting, 67 automated tests, the Electron end-to-end test, Windows x64 packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.

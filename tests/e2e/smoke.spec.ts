@@ -118,6 +118,19 @@ test('launches the desktop application and renders its first window', async () =
     await expect(window.getByLabel('Promotion name')).toHaveValue('Classic Cheese Pizza night')
     await expect(window.getByLabel('Customer terms')).not.toHaveValue('')
 
+    await window.getByRole('button',{name:'Review desk'}).click()
+    const reviewPackage=window.locator('.review-package').filter({hasText:'Visible media proof'})
+    await expect(reviewPackage.getByRole('button',{name:'Approve package'})).toBeVisible()
+    await reviewPackage.getByRole('button',{name:'Approve package'}).click()
+    await expect(window.getByText('Visible media proof is approved and ready to schedule.')).toBeVisible()
+    await window.getByRole('button',{name:'Calendar'}).click()
+    await expect(window.getByRole('option',{name:'Visible media proof'})).toHaveCount(1)
+    await expect(window.locator('.month-grid > div')).toHaveCount(42)
+    const calendarBox=await window.locator('.month-calendar').boundingBox()
+    expect(calendarBox?.width).toBeGreaterThan(600)
+    const selectAppearance=await window.getByLabel('Approved content').evaluate(element=>getComputedStyle(element).appearance)
+    expect(selectAppearance).toBe('none')
+
     const appPath = await electronApp.evaluate(({ app }) => app.getAppPath())
     expect(appPath).toBeTruthy()
   } finally {

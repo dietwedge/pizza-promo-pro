@@ -148,8 +148,45 @@ describe('desktop app shell', () => {
     render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
     fireEvent.click(screen.getByRole('button', { name: 'Review desk' }))
     expect(await screen.findByText('Editorial proofing')).toBeVisible()
-    expect(screen.getByText('Source-aware checks')).toBeVisible()
-    expect(screen.getByText('Needs verification')).toBeVisible()
+    expect(screen.getByText('Human approval required')).toBeVisible()
+    expect(screen.getByText('Approve the package')).toBeVisible()
+    expect(screen.getByText('Schedule on Calendar')).toBeVisible()
+  })
+
+  it('approves a complete content package from the Review Desk',async()=>{
+    const item={id:'11111111-1111-4111-8111-111111111111',title:'Friday family night',brief:'A verified Friday offer.',status:'ready_for_review',updated_at:1,variants:[{id:'22222222-2222-4222-8222-222222222222',platform:'instagram',copy:'Friday family night is ready.',metadata_json:'{}'}],generationJobs:[]}
+    const invokeMock=vi.fn(async(channel:string)=>{
+      if(channel==='app:getInfo')return {ok:true,data:{name:'Pizza Promo Pro',version:'0.1.0',online:true,platform:'test'}}
+      if(channel==='onboarding:getStatus')return {ok:true,data:{shouldShow:false,dismissed:true,completionPercent:100,essentialComplete:true,steps:[]}}
+      if(channel==='content:listStudio')return {ok:true,data:[item]}
+      if(channel==='content:transition')return {ok:true,data:{...item,status:'approved'}}
+      return {ok:true,data:[]}
+    })
+    Object.defineProperty(window,'pizzaSocial',{configurable:true,value:{invoke:invokeMock}})
+    render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
+    fireEvent.click(screen.getByRole('button',{name:'Review desk'}))
+    fireEvent.click(await screen.findByRole('button',{name:'Approve package'}))
+    await waitFor(()=>expect(invokeMock).toHaveBeenCalledWith('content:transition',{contentItemId:item.id,to:'approved'}))
+    expect(await screen.findByText('Friday family night is approved and ready to schedule.')).toBeVisible()
+  })
+
+  it('presents approved content in a structured monthly calendar',async()=>{
+    const item={id:'11111111-1111-4111-8111-111111111111',title:'Friday family night',brief:'A verified Friday offer.',status:'approved',updated_at:1,variants:[],generationJobs:[]}
+    const invokeMock=vi.fn(async(channel:string)=>{
+      if(channel==='app:getInfo')return {ok:true,data:{name:'Pizza Promo Pro',version:'0.1.0',online:true,platform:'test'}}
+      if(channel==='onboarding:getStatus')return {ok:true,data:{shouldShow:false,dismissed:true,completionPercent:100,essentialComplete:true,steps:[]}}
+      if(channel==='content:listStudio')return {ok:true,data:[item]}
+      if(channel==='schedule:list')return {ok:true,data:[]}
+      if(channel==='schedule:create')return {ok:true,data:[]}
+      return {ok:true,data:[]}
+    })
+    Object.defineProperty(window,'pizzaSocial',{configurable:true,value:{invoke:invokeMock}})
+    render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
+    fireEvent.click(screen.getByRole('button',{name:'Calendar'}))
+    expect(await screen.findByRole('heading',{name:'Schedule approved content'})).toBeVisible()
+    expect(await screen.findByRole('option',{name:'Friday family night'})).toBeVisible()
+    expect(document.querySelectorAll('.month-grid > div')).toHaveLength(42)
+    expect(screen.getByRole('button',{name:'Previous month'})).toBeVisible()
   })
 
   it('labels performance data sources and keeps live reporting disabled', async () => {

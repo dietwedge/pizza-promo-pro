@@ -2,4 +2,4 @@
 
 The active milestone-one checklist and review log are maintained in [`tasks/todo.md`](tasks/todo.md).
 
-Current status: Stage nineteen Brand Interview layout correction completed and verified on Windows x64. See `tasks/todo.md`.
+Current status: Stage twenty Review Desk, Calendar, and shared control-system polish completed and verified on Windows x64. See `tasks/todo.md`.
