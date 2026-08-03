@@ -487,3 +487,23 @@ Review:
 - Generated and imported assets now appear persistently in the Media Library. Image previews are inline; video and oversized images retain the protected external review action.
 - Running jobs show durable progress copy, while failed jobs display their saved safe error message and leave the content in a retryable draft state.
 - Type checks, lint, 64 automated tests, an Electron test that persists and renders generated media in both locations, Windows packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.
+
+## Stage eighteen — brand references and guided brand strategy
+
+- [x] Let customers import their real pizza, storefront, packaging, staff, and previous-ad images into the local Media Library.
+- [x] Let customers deliberately select compatible reference images during Higgsfield cost approval and generation.
+- [x] Validate reference IDs, protected local paths, file types, counts, and model compatibility in the main process.
+- [x] Persist the exact reference asset IDs on generation jobs and output metadata for review traceability.
+- [x] Add an AI-guided Brand Profile interview covering the business, audience, differentiators, goals, and marketing direction.
+- [x] Convert interview answers into an editable profile proposal that never saves without explicit customer approval.
+- [x] Add contracts, UI, services, safety documentation, and Electron regression coverage.
+- [x] Run all verification gates, package the Windows installer, commit, and publish.
+
+Review:
+
+- Customers can import authentic shop images through the existing protected Media Library and select up to four for a specific generation. Reference selection is available only when the chosen live model schema supports it.
+- Read-only live schema checks confirmed current image-reference support for GPT Image 2, Nano Banana 2, and Seedance 2.0. Other catalog models remain available for prompt-only generation instead of being removed.
+- Cost estimation and approved generation receive the same validated references. The main process accepts UUIDs only, proves every file remains under protected storage, permits images up to 30 MB, and stores the exact asset IDs on the job and output.
+- Brand Profile now includes a five-question guided interview. The configured customer-owned model or Ollama proposes voice, audience, visual direction, positioning, and rules; the offline provider offers the same safe workflow.
+- “Use this profile” fills the editable form but does not save. Suggested rules remain recommendations rather than silently changing the separate Brand Rules table.
+- Type checks, lint, 65 automated tests, the expanded isolated-profile Electron test, Windows packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.

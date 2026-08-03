@@ -9,6 +9,7 @@ import { audit } from './data-service'
 type AiProvider='local_mock'|'openai'|'openai_compatible'|'ollama'
 type AiConfig={provider:AiProvider;model:string;endpoint:string;hasApiKey:boolean;liveEnabled:boolean;updatedAt:number}
 export type PromotionSuggestion={name:string;description:string;couponCode:string;terms:string;rationale:string;provider:string;model:string}
+export type BrandProfileSuggestion={voice:string;audience:string;visualStyle:string;positioning:string;rules:string[];provider:string;model:string}
 const configKey='connection.ai_model', secretKey='ai.model.api_key', vault=new ElectronCredentialVault()
 
 function validateEndpoint(raw:string,provider:AiProvider):string{
@@ -69,6 +70,23 @@ export async function suggestPromotion(goal:string):Promise<PromotionSuggestion>
   const completion=await provider().complete([{role:'system',content:`You create editable promotion ideas for a pizza-shop owner. Return only one JSON object with string fields name, description, couponCode, terms, rationale. Ground menu names and prices only in these saved facts: ${JSON.stringify(facts)}. The requested discount, bundle, or code is a proposal, not an existing fact. Never invent ingredients, dietary claims, awards, customer claims, or store hours. Keep the offer operationally simple and make terms explicit.`},{role:'user',content:`Promotion goal: ${goal}`}])
   const parsed=promotionJson(completion.text);audit('ai.promotion.suggested','promotions',null,{provider:completion.provider,model:completion.model,menuFacts:facts.menu.length})
   return {...parsed,provider:completion.provider,model:completion.model}
+}
+export async function suggestBrandProfile(answers:{story:string;customers:string;difference:string;goals:string;marketing:string}):Promise<BrandProfileSuggestion>{
+  const config=getAiConfig(),facts=promotionFacts(),answerText=Object.values(answers).join(' ').trim()
+  if(answerText.length<30)throw new Error('Add a little more detail about the business before creating the brand profile.')
+  if(config.provider==='local_mock'){
+    const audience=answers.customers.trim().slice(0,500),voice=answers.marketing.trim().slice(0,500)||'Friendly, direct, and neighborhood-focused',visualStyle=`Authentic photography of ${facts.business}'s real food, people, packaging, and storefront; ${answers.difference.trim().slice(0,300)}`.slice(0,700)
+    const result={voice,audience,visualStyle,positioning:`${facts.business} is the local choice for customers who value ${answers.difference.trim()}.`.slice(0,500),rules:['Use only verified menu facts and prices.','Prefer authentic shop references over generic pizza imagery.','Keep every promotion clear, specific, and easy to redeem.'],provider:'local_mock',model:'local-deterministic-v1'}
+    audit('ai.brand_profile.suggested','brand_profiles',null,{provider:result.provider,model:result.model});return result
+  }
+  const completion=await provider().complete([{role:'system',content:`You are a practical brand strategist for an independent pizza shop. Return only one JSON object with string fields voice, audience, visualStyle, positioning and an array of 3-5 short strings named rules. Use the owner's answers as direction, not proof of factual claims. Do not invent awards, reviews, ingredients, history, prices, health claims, or performance results. Keep each profile field under 700 characters and make it immediately usable for content creation. Saved context: ${JSON.stringify(facts)}`},{role:'user',content:`Owner interview: ${JSON.stringify(answers)}`}])
+  const match=completion.text.match(/\{[\s\S]*\}/);if(!match)throw new Error('The AI response did not contain a usable brand profile. Try again.')
+  let value:unknown;try{value=JSON.parse(match[0])}catch{throw new Error('The AI response could not be read as a brand profile. Try again.')}
+  if(!value||typeof value!=='object')throw new Error('The AI response did not contain a usable brand profile.')
+  const record=value as Record<string,unknown>,read=(key:string)=>typeof record[key]==='string'?record[key].trim().slice(0,700):'',rules=Array.isArray(record.rules)?record.rules.filter((rule):rule is string=>typeof rule==='string').map(rule=>rule.trim().slice(0,300)).filter(Boolean).slice(0,5):[]
+  const result={voice:read('voice'),audience:read('audience'),visualStyle:read('visualStyle'),positioning:read('positioning'),rules,provider:completion.provider,model:completion.model}
+  if(!result.voice||!result.audience||!result.visualStyle)throw new Error('The AI response was missing part of the brand profile. Try again with more detail.')
+  audit('ai.brand_profile.suggested','brand_profiles',null,{provider:completion.provider,model:completion.model});return result
 }
 function defaultThread():string{
   const database=getDatabase(), existing=database.prepare('SELECT id FROM ai_chat_threads ORDER BY created_at LIMIT 1').get() as {id:string}|undefined

@@ -43,6 +43,7 @@ const allowedChannels = new Set<IpcChannel>([
   'ai:listChat',
   'ai:sendChat',
   'ai:suggestPromotion',
+  'ai:suggestBrandProfile',
   'ai:clearChat',
   'ai:listModels',
   'schedule:list',

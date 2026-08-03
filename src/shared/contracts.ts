@@ -52,7 +52,7 @@ export const updateStatusSchema = z.object({
 export const higgsfieldAccountStatusSchema = z.object({ state:z.enum(['signed_out','needs_workspace','ready','error']),installed:z.boolean(),message:z.string(),workspaces:z.array(z.object({id:z.string(),name:z.string()})),selectedWorkspaceId:z.string().optional() })
 const higgsfieldModelIdSchema=z.enum(higgsfieldModelIds)
 const higgsfieldAspectSchema=z.enum(['1:1','4:5','9:16','16:9'])
-const higgsfieldModelChoiceSchema=z.object({id:higgsfieldModelIdSchema,label:z.string(),kind:z.enum(['image','video']),recommendation:z.enum(['recommended','budget','specialist']),bestFor:z.string(),supportedAspects:z.array(higgsfieldAspectSchema),outputSummary:z.string()})
+const higgsfieldModelChoiceSchema=z.object({id:higgsfieldModelIdSchema,label:z.string(),kind:z.enum(['image','video']),recommendation:z.enum(['recommended','budget','specialist']),bestFor:z.string(),supportedAspects:z.array(higgsfieldAspectSchema),outputSummary:z.string(),supportsImageReferences:z.boolean()})
 export const resultSchema = <T extends z.ZodType>(data: T) => z.discriminatedUnion('ok', [
   z.object({ ok: z.literal(true), data }),
   z.object({ ok: z.literal(false), error: z.object({ code: z.string(), message: z.string() }) })
@@ -89,8 +89,8 @@ export const ipcContracts = {
   'content:updateVariant': { request: z.object({ variantId: idSchema, copy: z.string().max(70_000) }), response: z.object({ variant: recordSchema, warnings: z.array(contentWarningSchema) }) },
   'media:generateForContent': { request: z.object({ contentItemId: idSchema, prompt: z.string().trim().min(10).max(3000) }), response: recordSchema },
   'media:listHiggsfieldModels': {request:z.object({}).strict(),response:z.object({models:z.array(higgsfieldModelChoiceSchema)})},
-  'media:estimateHiggsfield': { request:z.object({prompt:z.string().trim().min(10).max(3000),model:higgsfieldModelIdSchema,aspectRatio:higgsfieldAspectSchema}).strict(),response:z.object({provider:z.literal('higgsfield'),kind:z.enum(['image','video']),model:higgsfieldModelIdSchema,modelLabel:z.string(),aspectRatio:z.string(),credits:z.number().nonnegative(),settings:recordSchema,outputSummary:z.string()}) },
-  'media:generateHiggsfield': { request:z.object({contentItemId:idSchema,prompt:z.string().trim().min(10).max(3000),model:higgsfieldModelIdSchema,aspectRatio:higgsfieldAspectSchema,maxCredits:z.number().positive().max(10000),confirmSpend:z.literal(true),confirmReview:z.literal(true)}).strict(),response:recordSchema },
+  'media:estimateHiggsfield': { request:z.object({prompt:z.string().trim().min(10).max(3000),model:higgsfieldModelIdSchema,aspectRatio:higgsfieldAspectSchema,referenceAssetIds:z.array(idSchema).max(4).default([])}).strict(),response:z.object({provider:z.literal('higgsfield'),kind:z.enum(['image','video']),model:higgsfieldModelIdSchema,modelLabel:z.string(),aspectRatio:z.string(),credits:z.number().nonnegative(),settings:recordSchema,outputSummary:z.string(),referenceAssetIds:z.array(idSchema)}) },
+  'media:generateHiggsfield': { request:z.object({contentItemId:idSchema,prompt:z.string().trim().min(10).max(3000),model:higgsfieldModelIdSchema,aspectRatio:higgsfieldAspectSchema,referenceAssetIds:z.array(idSchema).max(4).default([]),maxCredits:z.number().positive().max(10000),confirmSpend:z.literal(true),confirmReview:z.literal(true)}).strict(),response:recordSchema },
   'media:openForReview': {request:z.object({mediaAssetId:idSchema}).strict(),response:z.object({opened:z.literal(true)})},
   'media:readPreview': {request:z.object({mediaAssetId:idSchema}).strict(),response:z.object({dataUrl:z.string(),mimeType:z.string(),kind:z.literal('image'),filename:z.string()})},
   'agent:producePackage': { request: z.object({ objective: z.string().trim().min(10).max(2000), platforms: z.array(socialPlatformSchema).min(1) }), response: recordSchema },
@@ -100,6 +100,7 @@ export const ipcContracts = {
   'ai:listChat': { request: z.object({}), response: z.array(recordSchema) },
   'ai:sendChat': { request: z.object({content:z.string().trim().min(2).max(4000)}), response: recordSchema },
   'ai:suggestPromotion': {request:z.object({goal:z.string().trim().min(10).max(1000)}).strict(),response:z.object({name:z.string(),description:z.string(),couponCode:z.string(),terms:z.string(),rationale:z.string(),provider:z.string(),model:z.string()})},
+  'ai:suggestBrandProfile': {request:z.object({story:z.string().max(1500),customers:z.string().max(1500),difference:z.string().max(1500),goals:z.string().max(1500),marketing:z.string().max(1500)}).strict(),response:z.object({voice:z.string(),audience:z.string(),visualStyle:z.string(),positioning:z.string(),rules:z.array(z.string()),provider:z.string(),model:z.string()})},
   'ai:clearChat': { request: z.object({}), response: z.object({cleared:z.boolean()}) },
   'ai:listModels': { request: z.object({}), response: z.array(z.string()) },
   'schedule:list': { request: z.object({}), response: z.array(recordSchema) },

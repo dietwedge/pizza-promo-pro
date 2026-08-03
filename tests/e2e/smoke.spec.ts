@@ -45,11 +45,20 @@ test('launches the desktop application and renders its first window', async () =
       if(!result.ok||!result.data)throw new Error(result.error?.message??'Draft setup failed')
       return result.data
     })
-    await window.evaluate(async(contentItemId)=>{
-      const api=(globalThis as unknown as {pizzaSocial:{invoke:(channel:string,request:unknown)=>Promise<{ok:boolean;error?:{message:string}}>} }).pizzaSocial
+    const generated=await window.evaluate(async(contentItemId)=>{
+      const api=(globalThis as unknown as {pizzaSocial:{invoke:(channel:string,request:unknown)=>Promise<{ok:boolean;data?:{mediaId:string};error?:{message:string}}>} }).pizzaSocial
       const result=await api.invoke('media:generateForContent',{contentItemId,prompt:'A clearly labeled mock pizza image for inline review.'})
-      if(!result.ok)throw new Error(result.error?.message??'Mock media setup failed')
+      if(!result.ok||!result.data)throw new Error(result.error?.message??'Mock media setup failed')
+      return result.data
     },draft.id)
+    const referenceValidation=await window.evaluate(async(mediaAssetId)=>{
+      const api=(globalThis as unknown as {pizzaSocial:{invoke:(channel:string,request:unknown)=>Promise<{ok:boolean;data?:{id:string};error?:{message:string}}>} }).pizzaSocial
+      const draftResult=await api.invoke('content:createDraft',{title:'Reference validation',brief:'Verify incompatible models reject selected local references.',platforms:['instagram']})
+      if(!draftResult.ok||!draftResult.data)throw new Error(draftResult.error?.message??'Reference draft setup failed')
+      return api.invoke('media:generateHiggsfield',{contentItemId:draftResult.data.id,prompt:'Use this authentic pizza as visual inspiration.',model:'z_image',aspectRatio:'1:1',referenceAssetIds:[mediaAssetId],maxCredits:1,confirmSpend:true,confirmReview:true})
+    },generated.mediaId)
+    expect(referenceValidation.ok).toBe(false)
+    expect(referenceValidation.error?.message).toContain('does not accept reference images')
     await window.getByRole('button',{name:'Content'}).click()
     await expect(window.getByRole('img',{name:/Generated visual for Visible media proof/})).toBeVisible()
     await expect(window.getByText('Review this image before approval or publishing.')).toBeVisible()
@@ -70,6 +79,14 @@ test('launches the desktop application and renders its first window', async () =
 
     await window.getByRole('button',{name:'Brand profile'}).click()
     await window.getByRole('button',{name:'Add brand profile'}).click()
+    await window.getByLabel('What should people understand about this pizza shop?').fill('A neighborhood pizza shop that values dependable local service.')
+    await window.getByLabel('Who are the customers you most want to reach?').fill('Local families and nearby workers.')
+    await window.getByLabel('What makes the shop meaningfully different?').fill('Detroit-style pizza and a welcoming neighborhood experience')
+    await window.getByLabel('How should the business sound and look?').fill('Friendly, direct, authentic, and based on real shop photography.')
+    await window.getByRole('button',{name:'Build my brand profile'}).click()
+    await expect(window.getByText(/E2E Pizza Shop is the local choice/)).toBeVisible()
+    await window.getByRole('button',{name:'Use this profile'}).click()
+    await expect(window.getByLabel('Primary audience')).toHaveValue('Local families and nearby workers.')
     await window.getByLabel('Voice').fill('Friendly and direct')
     await window.getByLabel('Primary audience').fill('Families')
     await window.getByLabel('Visual style').fill('Photorealistic')

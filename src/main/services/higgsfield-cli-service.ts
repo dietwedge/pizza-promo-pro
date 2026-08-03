@@ -71,16 +71,17 @@ export async function listSupportedHiggsfieldModels():Promise<HiggsfieldModelCho
   return higgsfieldModelChoices.filter(item=>available.has(item.id))
 }
 
-export function buildHiggsfieldGenerationArgs(command:'cost'|'create',prompt:string,profile:HiggsfieldGenerationProfile):string[]{
+export function buildHiggsfieldGenerationArgs(command:'cost'|'create',prompt:string,profile:HiggsfieldGenerationProfile,imageReferences:readonly string[]=[]):string[]{
   const args=['generate',command,profile.model,'--prompt',prompt]
   for(const [key,value] of Object.entries(profile.settings))args.push(`--${key}`,String(value))
+  for(const reference of imageReferences)args.push('--image-references',reference)
   if(command==='create')args.push('--wait','--wait-timeout','20m')
   args.push('--json')
   return args
 }
 
-export async function estimateHiggsfieldCredits(prompt:string,profile:HiggsfieldGenerationProfile):Promise<number>{
-  const result=await run(buildHiggsfieldGenerationArgs('cost',prompt,profile))
+export async function estimateHiggsfieldCredits(prompt:string,profile:HiggsfieldGenerationProfile,imageReferences:readonly string[]=[]):Promise<number>{
+  const result=await run(buildHiggsfieldGenerationArgs('cost',prompt,profile,imageReferences))
   const parsed=parseJson(result.stdout)
   const credits=parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?(parsed as Record<string,unknown>).credits:undefined
   if(typeof credits!=='number'||!Number.isFinite(credits)||credits<0)throw new Error('Higgsfield did not return a valid credit estimate.')
@@ -103,8 +104,8 @@ export function parseHiggsfieldGenerationResult(value:unknown):{remoteUrl:string
   return found
 }
 
-export async function generateWithHiggsfield(prompt:string,profile:HiggsfieldGenerationProfile):Promise<{remoteUrl:string;providerOutputId?:string}>{
-  const result=await run(buildHiggsfieldGenerationArgs('create',prompt,profile),21*60_000)
+export async function generateWithHiggsfield(prompt:string,profile:HiggsfieldGenerationProfile,imageReferences:readonly string[]=[]):Promise<{remoteUrl:string;providerOutputId?:string}>{
+  const result=await run(buildHiggsfieldGenerationArgs('create',prompt,profile,imageReferences),21*60_000)
   return parseHiggsfieldGenerationResult(parseJson(result.stdout))
 }
 

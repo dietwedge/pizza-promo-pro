@@ -30,7 +30,7 @@ describe('IPC contracts', () => {
   })
 
   it('requires explicit Higgsfield spend and review confirmation',()=>{
-    const input={contentItemId:crypto.randomUUID(),prompt:'Approved visual brief for a pizza special',model:'nano_banana_2_lite',aspectRatio:'1:1',maxCredits:7,confirmSpend:true,confirmReview:true}
+    const input={contentItemId:crypto.randomUUID(),prompt:'Approved visual brief for a pizza special',model:'nano_banana_2_lite',aspectRatio:'1:1',referenceAssetIds:[],maxCredits:7,confirmSpend:true,confirmReview:true}
     expect(ipcContracts['media:generateHiggsfield'].request.parse(input)).toEqual(input)
     expect(()=>ipcContracts['media:generateHiggsfield'].request.parse({...input,confirmSpend:false})).toThrow()
     expect(()=>ipcContracts['media:generateHiggsfield'].request.parse({...input,confirmReview:false})).toThrow()
@@ -38,6 +38,7 @@ describe('IPC contracts', () => {
     expect(ipcContracts['media:readPreview'].request.parse({mediaAssetId:crypto.randomUUID()})).toBeTruthy()
     expect(()=>ipcContracts['media:readPreview'].request.parse({mediaAssetId:'../../secret'})).toThrow()
     expect(ipcContracts['media:list'].request.parse({})).toEqual({})
+    expect(()=>ipcContracts['media:generateHiggsfield'].request.parse({...input,referenceAssetIds:Array.from({length:5},()=>crypto.randomUUID())})).toThrow()
   })
 
   it('rejects unknown AI providers and empty chat messages', () => {
@@ -45,6 +46,7 @@ describe('IPC contracts', () => {
     expect(() => ipcContracts['ai:sendChat'].request.parse({ content: ' ' })).toThrow()
     expect(ipcContracts['ai:suggestPromotion'].request.parse({goal:'Bring families in on Tuesday nights'})).toBeTruthy()
     expect(()=>ipcContracts['ai:suggestPromotion'].request.parse({goal:'sale'})).toThrow()
+    expect(ipcContracts['ai:suggestBrandProfile'].request.parse({story:'Neighborhood shop',customers:'Local families',difference:'Detroit style',goals:'More weekday orders',marketing:'Warm and direct'})).toBeTruthy()
   })
 
   it('bounds editable variant copy at the IPC boundary', () => {

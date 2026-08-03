@@ -14,7 +14,7 @@ import type { ContentStatus } from '../domain/content-status'
 import { generateForContent } from './generation-service'
 import { produceContentPackage } from './agent-service'
 import type { AgentPlatform } from '../providers/content-agent'
-import { clearChat, getAiConfig, listAiModels, listChatMessages, saveAiConfig, sendChatMessage, suggestPromotion, testAiConnection } from './ai-service'
+import { clearChat, getAiConfig, listAiModels, listChatMessages, saveAiConfig, sendChatMessage, suggestBrandProfile, suggestPromotion, testAiConnection } from './ai-service'
 import { attemptPublish, createSchedule, listSchedule } from './scheduling-service'
 import { approveAdDraft, listAdAccounts, listAdDrafts, removeAdAccount, saveAdAccount, saveAdDraft } from './ad-service'
 import type { adCapabilitySchema, adProviderSchema } from '../../shared/contracts'
@@ -63,8 +63,8 @@ export function registerAppHandlers(): void {
   registerValidatedHandler('content:updateVariant', ({ variantId, copy }: { variantId: string; copy: string }) => updateContentVariant(variantId, copy))
   registerValidatedHandler('media:generateForContent', ({ contentItemId, prompt }: { contentItemId: string; prompt: string }) => generateForContent(contentItemId, prompt))
   registerValidatedHandler('media:listHiggsfieldModels', () => getHiggsfieldMediaModels())
-  registerValidatedHandler('media:estimateHiggsfield', (input:{prompt:string;model:HiggsfieldModelId;aspectRatio:HiggsfieldAspectRatio}) => estimateHiggsfieldMedia(input))
-  registerValidatedHandler('media:generateHiggsfield', (input:{contentItemId:string;prompt:string;model:HiggsfieldModelId;aspectRatio:HiggsfieldAspectRatio;maxCredits:number;confirmSpend:true;confirmReview:true}) => generateHiggsfieldMedia(input))
+  registerValidatedHandler('media:estimateHiggsfield', (input:{prompt:string;model:HiggsfieldModelId;aspectRatio:HiggsfieldAspectRatio;referenceAssetIds:string[]}) => estimateHiggsfieldMedia(input))
+  registerValidatedHandler('media:generateHiggsfield', (input:{contentItemId:string;prompt:string;model:HiggsfieldModelId;aspectRatio:HiggsfieldAspectRatio;referenceAssetIds:string[];maxCredits:number;confirmSpend:true;confirmReview:true}) => generateHiggsfieldMedia(input))
   registerValidatedHandler('media:openForReview', ({mediaAssetId}:{mediaAssetId:string}) => openMediaForReview(mediaAssetId))
   registerValidatedHandler('media:readPreview', ({mediaAssetId}:{mediaAssetId:string}) => readMediaPreview(mediaAssetId))
   registerValidatedHandler('agent:producePackage', ({ objective, platforms }: { objective: string; platforms: AgentPlatform[] }) => produceContentPackage(objective, platforms))
@@ -74,6 +74,7 @@ export function registerAppHandlers(): void {
   registerValidatedHandler('ai:listChat',()=>listChatMessages())
   registerValidatedHandler('ai:sendChat',({content}:{content:string})=>sendChatMessage(content))
   registerValidatedHandler('ai:suggestPromotion',({goal}:{goal:string})=>suggestPromotion(goal))
+  registerValidatedHandler('ai:suggestBrandProfile',(answers:{story:string;customers:string;difference:string;goals:string;marketing:string})=>suggestBrandProfile(answers))
   registerValidatedHandler('ai:clearChat',()=>({cleared:clearChat()}))
   registerValidatedHandler('ai:listModels',()=>listAiModels())
   registerValidatedHandler('schedule:list',()=>listSchedule())

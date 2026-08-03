@@ -79,6 +79,10 @@ The Promotion Copilot is a narrow structured-output workflow on top of the confi
 
 Completed generation outputs are joined back onto their originating Content Studio item and also listed in the Media Library. Image previews are read on demand through a validated IPC channel from protected app storage; the renderer never receives an arbitrary filesystem path. Inline previews are capped at 25 MB, while larger images and video remain available through the contained operating-system review action. Failed jobs retain their provider-safe error message and return the content item to a retryable draft state.
 
+Imported Media Library images can be selected as per-generation visual references for models whose live schema supports `image_references`: GPT Image 2, Nano Banana 2, and Seedance 2.0 at the time of implementation. The main process revalidates at most four UUIDs, protected paths, image MIME types, existence, and a 30 MB per-file limit before both cost estimation and generation. Exact reference IDs are stored in `generation_jobs.source_asset_ids_json` and output metadata. Other models remain available for prompt-only generation.
+
+The guided Brand Profile interview is another narrow structured-output workflow over `AiModelProvider`. Five owner-answer fields become a proposed voice, audience, visual direction, positioning statement, and suggested rules. The proposal only fills the existing editable form after “Use this profile”; the normal explicit save action remains required. Suggested rules are guidance and are not inserted into the separate Brand Rules table automatically.
+
 ## Local-first behavior
 
 Core planning, editing, review, calendar, and media-library work remains available offline. Features requiring internet access must be identified in the interface. Provider outputs are downloaded to application-controlled local storage before they become media assets.

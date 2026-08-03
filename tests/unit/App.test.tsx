@@ -11,6 +11,7 @@ describe('desktop app shell', () => {
       if (channel === 'updates:getStatus') return { ok: true, data: { state: 'unavailable', currentVersion: '0.1.0', availableVersion: null, progressPercent: null, message: 'Update checks are available in installed builds.' } }
       if (channel === 'ai:getConfig') return { ok: true, data: { provider: 'local_mock', model: 'local-deterministic-v1', endpoint: '', hasApiKey: false, liveEnabled: false, updatedAt: 0 } }
       if (channel === 'ai:suggestPromotion') return {ok:true,data:{name:'Tuesday Family Pizza Night',description:'Pair a large cheese pizza with a family add-on at a value you approve.',couponCode:'TUESDAY',terms:'Tuesdays only during the dates shown. Cannot be combined with other offers.',rationale:'A clear weekday occasion is easy to explain.',provider:'local_mock',model:'local-deterministic-v1'}}
+      if (channel === 'ai:suggestBrandProfile') return {ok:true,data:{voice:'Warm, direct, neighborhood-focused',audience:'Local families and nearby workers',visualStyle:'Authentic food and storefront photography',positioning:'The neighborhood pizza shop for dependable local nights.',rules:['Use verified prices','Show the real pizza'],provider:'local_mock',model:'local-deterministic-v1'}}
       if (channel === 'onboarding:getStatus') return { ok: true, data: { shouldShow: false, dismissed: false, completionPercent: 50, essentialComplete: true, steps: [
         {id:'business',label:'Business profile',status:'complete',description:'Shop facts',target:'businesses'},{id:'location',label:'Store location',status:'complete',description:'Address and hours',target:'locations'},{id:'brand',label:'Brand profile',status:'complete',description:'Voice',target:'brandProfiles'},{id:'menu',label:'Menu facts',status:'complete',description:'Menu',target:'menuItems'},
         {id:'ai',label:'AI content provider',status:'optional',description:'AI',target:'settings'},{id:'organicConnections',label:'Social accounts',status:'optional',description:'Social',target:'settings'},{id:'mediaProvider',label:'Higgsfield media provider',status:'optional',description:'Media',target:'settings'},{id:'adAccounts',label:'Advertising account',status:'optional',description:'Ads',target:'ads'}] } }
@@ -67,12 +68,15 @@ describe('desktop app shell', () => {
 
   it('requires a Higgsfield cost estimate before supervised generation',async()=>{
     const item={id:'11111111-1111-4111-8111-111111111111',title:'Friday special',brief:'Create a warm overhead photograph of our Friday pizza special.',status:'draft',updated_at:1,variants:[],generationJobs:[]}
-    const invokeMock=vi.fn(async(channel:string)=>{
+    const referenceId='55555555-5555-4555-8555-555555555555'
+    const invokeMock=vi.fn(async(channel:string,request?:unknown)=>{
       if(channel==='app:getInfo')return {ok:true,data:{name:'Pizza Promo Pro',version:'0.1.0',online:true,platform:'test'}}
       if(channel==='onboarding:getStatus')return {ok:true,data:{shouldShow:false,dismissed:true,completionPercent:100,essentialComplete:true,steps:[]}}
       if(channel==='content:listStudio')return {ok:true,data:[item]}
-      if(channel==='media:listHiggsfieldModels')return {ok:true,data:{models:[{id:'gpt_image_2',label:'GPT Image 2',kind:'image',recommendation:'recommended',bestFor:'Polished promotions and readable text.',supportedAspects:['1:1','4:5','9:16','16:9'],outputSummary:'high quality · 2K'},{id:'nano_banana_2_lite',label:'Nano Banana 2 Lite',kind:'image',recommendation:'budget',bestFor:'Fast lower-cost drafts.',supportedAspects:['1:1','4:5','9:16','16:9'],outputSummary:'fast · 1K'},{id:'kling3_0_turbo',label:'Kling 3.0 Turbo',kind:'video',recommendation:'budget',bestFor:'Fast social clips.',supportedAspects:['1:1','9:16','16:9'],outputSummary:'5 seconds · 720p'}]}}
-      if(channel==='media:estimateHiggsfield')return {ok:true,data:{provider:'higgsfield',kind:'image',model:'gpt_image_2',modelLabel:'GPT Image 2',aspectRatio:'1:1',credits:7,settings:{},outputSummary:'high quality · 2K'}}
+      if(channel==='media:list')return {ok:true,data:[{id:referenceId,kind:'image',original_filename:'real-shop-pizza.jpg',mime_type:'image/jpeg',byte_size:1200,source:'import',created_at:1}]}
+      if(channel==='media:readPreview')return {ok:true,data:{dataUrl:'data:image/gif;base64,R0lGODlhAQABAAAAACw=',filename:'real-shop-pizza.jpg',kind:'image',mimeType:'image/jpeg'}}
+      if(channel==='media:listHiggsfieldModels')return {ok:true,data:{models:[{id:'gpt_image_2',label:'GPT Image 2',kind:'image',recommendation:'recommended',bestFor:'Polished promotions and readable text.',supportedAspects:['1:1','4:5','9:16','16:9'],outputSummary:'high quality · 2K',supportsImageReferences:true},{id:'nano_banana_2_lite',label:'Nano Banana 2 Lite',kind:'image',recommendation:'budget',bestFor:'Fast lower-cost drafts.',supportedAspects:['1:1','4:5','9:16','16:9'],outputSummary:'fast · 1K',supportsImageReferences:false},{id:'kling3_0_turbo',label:'Kling 3.0 Turbo',kind:'video',recommendation:'budget',bestFor:'Fast social clips.',supportedAspects:['1:1','9:16','16:9'],outputSummary:'5 seconds · 720p',supportsImageReferences:false}]}}
+      if(channel==='media:estimateHiggsfield')return {ok:true,data:{provider:'higgsfield',kind:'image',model:'gpt_image_2',modelLabel:'GPT Image 2',aspectRatio:'1:1',credits:7,settings:{},outputSummary:'high quality · 2K',referenceAssetIds:(request as {referenceAssetIds?:string[]})?.referenceAssetIds??[]}}
       if(channel==='media:generateHiggsfield')return {ok:true,data:{status:'completed',requiresReview:true}}
       return {ok:true,data:[]}
     })
@@ -80,15 +84,18 @@ describe('desktop app shell', () => {
     render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
     fireEvent.click(screen.getByRole('button',{name:'Content'}))
     fireEvent.click(await screen.findByRole('button',{name:'Create with Higgsfield'}))
+    expect(await screen.findByText('Show Higgsfield what this shop looks like')).toBeVisible()
+    fireEvent.click(screen.getByRole('button',{name:'real-shop-pizza.jpg'}))
     expect(await screen.findByRole('option',{name:'Nano Banana 2 Lite · Budget'})).toBeInTheDocument()
     fireEvent.change(screen.getByLabelText('Output'),{target:{value:'video'}})
     expect(screen.getByRole('option',{name:'Kling 3.0 Turbo · Budget'})).toBeInTheDocument()
     fireEvent.change(screen.getByLabelText('Output'),{target:{value:'image'}})
     expect(screen.queryByRole('button',{name:/Approve prompt/})).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button',{name:'Check Higgsfield cost'}))
+    await waitFor(()=>expect(invokeMock).toHaveBeenCalledWith('media:estimateHiggsfield',expect.objectContaining({referenceAssetIds:[referenceId]})))
     const approve=await screen.findByRole('button',{name:'Approve prompt & use 7 credits'})
     fireEvent.click(approve)
-    await waitFor(()=>expect(invokeMock).toHaveBeenCalledWith('media:generateHiggsfield',expect.objectContaining({contentItemId:item.id,model:'gpt_image_2',maxCredits:7,confirmSpend:true,confirmReview:true})))
+    await waitFor(()=>expect(invokeMock).toHaveBeenCalledWith('media:generateHiggsfield',expect.objectContaining({contentItemId:item.id,model:'gpt_image_2',referenceAssetIds:[referenceId],maxCredits:7,confirmSpend:true,confirmReview:true})))
   })
 
   it('provides a dedicated supervised AI chat workspace', async () => {
@@ -111,6 +118,19 @@ describe('desktop app shell', () => {
     expect(screen.getByDisplayValue('Tuesday Family Pizza Night')).toBeVisible()
     expect(screen.getByDisplayValue('TUESDAY')).toBeVisible()
     expect(screen.getByDisplayValue(/Tuesdays only/)).toBeVisible()
+  })
+
+  it('builds an editable Brand Profile from a guided owner interview',async()=>{
+    render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
+    fireEvent.click(screen.getByRole('button',{name:'Brand profile'}))
+    fireEvent.click(await screen.findByRole('button',{name:'Add brand profile'}))
+    fireEvent.change(screen.getByLabelText('What should people understand about this pizza shop?'),{target:{value:'A dependable neighborhood shop with a long local story.'}})
+    fireEvent.change(screen.getByLabelText('Who are the customers you most want to reach?'),{target:{value:'Local families and nearby workers.'}})
+    fireEvent.click(screen.getByRole('button',{name:'Build my brand profile'}))
+    expect(await screen.findByText('The neighborhood pizza shop for dependable local nights.')).toBeVisible()
+    fireEvent.click(screen.getByRole('button',{name:'Use this profile'}))
+    expect(screen.getByDisplayValue('Warm, direct, neighborhood-focused')).toBeVisible()
+    expect(screen.getByDisplayValue('Authentic food and storefront photography')).toBeVisible()
   })
 
   it('keeps paid-media drafting separate from live launch authority', async () => {

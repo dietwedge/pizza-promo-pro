@@ -19,6 +19,7 @@ describe('Higgsfield connector responses',()=>{
     expect(higgsfieldProfile('kling3_0_turbo','9:16')).toEqual({kind:'video',model:'kling3_0_turbo',settings:{aspect_ratio:'9:16',duration:5,resolution:'720p'}})
     expect(()=>higgsfieldProfile('kling3_0_turbo','4:5')).toThrow('not supported')
     expect(buildHiggsfieldGenerationArgs('create','Approved pizza brief',higgsfieldProfile('gpt_image_2','1:1'))).toContain('--wait')
+    expect(buildHiggsfieldGenerationArgs('create','Approved pizza brief',higgsfieldProfile('gpt_image_2','1:1'),['C:\\media\\pizza.jpg'])).toEqual(expect.arrayContaining(['--image-references','C:\\media\\pizza.jpg']))
   })
 
   it('normalizes the live catalog and discards malformed rows',()=>{

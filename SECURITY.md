@@ -50,6 +50,10 @@ Storefront branding is detected only from exact Clover, Square, Slice, and Toast
 
 Generated-media previews accept only validated media-asset UUIDs. The main process resolves the database path, proves it remains under the app-controlled media directory, verifies the file exists and is an image, and enforces a 25 MB inline limit before returning a data URL. Arbitrary local paths are never accepted from the renderer. Original files open only through the same protected-path validation.
 
+Higgsfield reference images are explicit, per-generation selections. The main process accepts no renderer-supplied filesystem paths: it resolves up to four media UUIDs from the local database, confines them to protected storage, checks existence, image type, and size, and rejects references for incompatible models. The same references participate in the estimate and approved generation, and their IDs remain in the local audit trail. UI copy states that references guide style but do not prove an exact product depiction.
+
+Brand interview answers are treated as owner direction, not verified claims. Structured AI output is length-bounded and cannot save a profile or rules. Owners must apply the proposal, edit it, and use the existing validated save action.
+
 Customer-owned AI keys use the same credential vault. AI requests run only from the main process with validated HTTPS or localhost endpoints, bounded timeouts, and redirects disabled. Chat receives a factual context package and has no IPC capability for approval, scheduling, publishing, filesystem access, or credentials.
 
 ## Publishing safeguards
