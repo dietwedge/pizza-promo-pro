@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { EntityKind } from '../../shared/contracts'
 import { getDatabase } from '../database'
 import { contentStatuses } from '../domain/content-status'
+import { normalizeRecordInput } from '../domain/record-input'
 
 type Definition = { table: string; id: string; columns: readonly string[]; defaults?: Record<string, unknown> }
 
@@ -18,19 +19,13 @@ const definitions: Record<EntityKind, Definition> = {
   contentVariants: { table: 'content_variants', id: 'id', columns: ['content_item_id', 'platform', 'copy', 'metadata_json'], defaults: { copy: '', metadata_json: '{}' } }
 }
 
-function normalizeInput(value: Record<string, unknown>): Record<string, unknown> {
-  const result: Record<string, unknown> = {}
-  for (const [key, entry] of Object.entries(value)) result[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)] = entry
-  return result
-}
-
 export function listRecords(entity: EntityKind): Record<string, unknown>[] {
   return getDatabase().prepare(`SELECT * FROM ${definitions[entity].table} ORDER BY updated_at DESC`).all() as Record<string, unknown>[]
 }
 
 export function saveRecord(entity: EntityKind, rawValue: Record<string, unknown>): Record<string, unknown> {
   const definition = definitions[entity]
-  const value = { ...definition.defaults, ...normalizeInput(rawValue) }
+  const value = { ...definition.defaults, ...normalizeRecordInput(rawValue) }
   const database = getDatabase()
   if (definition.columns.includes('business_id') && !value.business_id) {
     const business = database.prepare('SELECT id FROM businesses ORDER BY created_at LIMIT 1').get() as { id: string } | undefined
@@ -49,6 +44,10 @@ export function saveRecord(entity: EntityKind, rawValue: Record<string, unknown>
     value.category_id = category.id
   }
   if (entity === 'brandProfiles' && !value.business_id) throw new Error('Create the business profile first.')
+  if (entity === 'brandProfiles' && !value.id) {
+    const existing=database.prepare('SELECT id FROM brand_profiles WHERE business_id = ?').get(String(value.business_id)) as {id:string}|undefined
+    if(existing)value.id=existing.id
+  }
   if (entity === 'brandRules' && !value.brand_profile_id) {
     const profile = database.prepare('SELECT id FROM brand_profiles ORDER BY created_at LIMIT 1').get() as { id: string } | undefined
     if (!profile) throw new Error('Create the brand profile before adding brand rules.')

@@ -26,6 +26,8 @@ See [ARCHITECTURE.md](ARCHITECTURE.md), [DATABASE.md](DATABASE.md), and [SECURIT
 - Customer-owned AI providers, Ollama, supervised chat, and grounded content production
 - Secure organic social setup, official Higgsfield browser login and workspace selection, plus advanced custom MCP verification
 - Supervised Higgsfield image/video generation with a live model catalog, quality and budget choices, live credit estimates, explicit spend confirmation, protected local downloads, and human review
+- Review-first public menu URL importing with editable extracted items and verified prices
+- Visible Content Studio creation results with brief editing, platform-draft rebuilding, and confirmed deletion
 - Persistent scheduling with supervised mock publishing and retry history
 - Platform proofing desk with editable variants, character counters, factual-risk warnings, and approval locks
 - Unified organic and paid performance reporting with source, freshness, spend, conversion, and return labels
@@ -37,7 +39,7 @@ Live organic publishing and live advertising mutations remain disabled until eac
 
 ## Milestone-one scope
 
-- Business, location, brand, menu, promotion, and campaign management
+- Business, location, brand, menu, promotion, and campaign management with edit and delete controls
 - Local media importing into application-controlled storage
 - Content workflow and platform-specific variants
 - Calendar shell, settings, and local backup/restore

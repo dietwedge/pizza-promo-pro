@@ -417,3 +417,21 @@ Review:
 - Live non-billable checks confirmed materially cheaper defaults for iteration: Nano Banana 2 Lite at 1 credit, Z Image at 0.15, Kling 3.0 Turbo at 7.5, and Seedance 1.5 Pro at 4.8 for the tested briefs and profiles. The UI always displays a fresh estimate because provider pricing can change.
 - Model IDs remain allowlisted at IPC, model-specific formats are enforced, a changed selection clears approval, and generation rechecks the chosen profile's cost before spending.
 - Type checks, lint, 55 automated tests, the Electron smoke test, Windows packaging, and the production dependency audit all pass. The audit reports zero vulnerabilities.
+## Stage fourteen — reliable data entry, menu import, and content management
+
+- [x] Correct location and brand-profile persistence against real database constraints.
+- [x] Add regression coverage for camelCase field normalization and one-profile-per-business updates.
+- [x] Add a safe menu URL fetcher with SSRF protection, bounded downloads, structured-data extraction, and preview-before-import.
+- [x] Import selected menu items through the existing local database model without inventing missing prices.
+- [x] Make content creation show immediate in-place progress, success, and the newly created draft.
+- [x] Add editing and confirmed deletion for existing Content Studio items.
+- [x] Verify type checks, lint, tests, Electron runtime, production security, and Windows packaging.
+- [x] Document, commit, and publish the completed stage.
+
+Review:
+
+- The isolated Electron/SQLite test creates the Rochester location from the screenshot and proves there is no `address_line_1` constraint failure. It also creates and updates one Brand Profile without a duplicate or unique-constraint failure.
+- Menu accepts a public URL, extracts Schema.org menu data or conservative visible-price rows, and presents editable selections. Prices are never guessed; missing prices block import until verified or deselected.
+- Content creation changes the button state, reports the created platform count, highlights the new card, and brings it into view.
+- Draft and review-stage content can be edited with an explicit platform-copy rebuild. Existing content can be deleted only after confirmation; media-generation records cannot be deleted mid-job.
+- Type checks, lint, 61 automated tests, the expanded isolated-profile Electron test, Windows packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.

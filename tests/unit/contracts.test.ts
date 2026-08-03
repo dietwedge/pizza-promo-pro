@@ -48,6 +48,16 @@ describe('IPC contracts', () => {
     expect(() => ipcContracts['content:updateVariant'].request.parse({ variantId, copy: 'x'.repeat(70_001) })).toThrow()
   })
 
+  it('requires reviewed menu prices and explicit content deletion',()=>{
+    expect(ipcContracts['menu:previewUrl'].request.parse({url:'https://example.com/menu'})).toBeTruthy()
+    expect(()=>ipcContracts['menu:previewUrl'].request.parse({url:'file:///etc/passwd'})).toThrow()
+    expect(ipcContracts['menu:importPreview'].request.parse({items:[{name:'Cheese Pizza',description:'Classic',priceCents:1299,currency:'USD'}]})).toBeTruthy()
+    expect(()=>ipcContracts['menu:importPreview'].request.parse({items:[{name:'Mystery Pizza',description:'',priceCents:null,currency:'USD'}]})).toThrow()
+    const contentItemId=crypto.randomUUID()
+    expect(ipcContracts['content:updateDraft'].request.parse({contentItemId,title:'Friday BOGO',brief:'Buy one pizza and receive the verified Friday offer.',regenerateVariants:true})).toBeTruthy()
+    expect(()=>ipcContracts['content:delete'].request.parse({contentItemId,confirmDelete:false})).toThrow()
+  })
+
   it('validates paid-media permissions without exposing launch controls', () => {
     const account = ipcContracts['ads:saveAccount'].request.parse({ provider: 'meta', displayName: 'Downtown Meta Ads', accountId: 'act_123', capability: 'read_only' })
     expect(account.capability).toBe('read_only')

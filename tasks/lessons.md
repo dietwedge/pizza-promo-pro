@@ -14,3 +14,10 @@
 - A recommended AI model is a starting choice, not an exclusive allowlist, when the connected provider offers multiple useful and lower-cost options.
 - For customer-funded generation, expose compatible models with live pricing and task guidance while retaining strict validation, explicit spend approval, and review controls.
 - Separate “recommended default” from “available choice” in both architecture and UI copy.
+
+## 2026-08-03 — Verify forms against database constraints and show results in context
+
+- Every renderer field mapping must be exercised through the real normalization and database constraint path; a visually correct camelCase form is not proof that the persisted snake_case column is correct.
+- One-per-business records such as brand profiles must open the existing record for editing instead of offering a duplicate-create state.
+- A successful action must produce visible feedback and reveal the new result next to the initiating workflow, especially when the result otherwise appears below the fold.
+- Once users can create operational records or content, include edit and delete controls in the same workflow with confirmation for destructive actions.

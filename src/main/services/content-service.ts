@@ -50,6 +50,30 @@ export function listContentStudio(): Record<string, unknown>[] {
   return rows.map((row) => getContentStudioItem(row.id))
 }
 
+export function updateContentDraft(input:{contentItemId:string;title:string;brief:string;regenerateVariants:true}):Record<string,unknown>{
+  const database=getDatabase(),item=database.prepare('SELECT status FROM content_items WHERE id=?').get(input.contentItemId) as {status:ContentStatus}|undefined
+  if(!item)throw new Error('Content item not found.')
+  if(!['draft','ready_for_review'].includes(item.status))throw new Error('Return this content to draft before editing its brief.')
+  const variants=database.prepare('SELECT id,platform,metadata_json FROM content_variants WHERE content_item_id=?').all(input.contentItemId) as Array<{id:string;platform:Platform;metadata_json:string}>
+  const now=Date.now()
+  database.exec('BEGIN IMMEDIATE')
+  try{
+    database.prepare('UPDATE content_items SET title=?,brief=?,status=?,updated_at=? WHERE id=?').run(input.title,input.brief,'draft',now,input.contentItemId)
+    for(const variant of variants){let metadata:Record<string,unknown>={};try{metadata=JSON.parse(variant.metadata_json) as Record<string,unknown>}catch{/* Rebuild with no optional source links. */}const menuId=typeof metadata.sourceMenuItemId==='string'?metadata.sourceMenuItemId:undefined,promotionId=typeof metadata.sourcePromotionId==='string'?metadata.sourcePromotionId:undefined,facts=verifiedFacts(menuId,promotionId);database.prepare('UPDATE content_variants SET copy=?,metadata_json=?,updated_at=? WHERE id=?').run(createGroundedCopy(variant.platform,input.brief,facts),JSON.stringify({...metadata,lastEditedBy:'local-user',regeneratedFromBrief:true}),now,variant.id)}
+    database.exec('COMMIT')
+  }catch(error){database.exec('ROLLBACK');throw error}
+  audit('content.draft.updated','content_items',input.contentItemId,{variantsRegenerated:variants.length,previousStatus:item.status})
+  return getContentStudioItem(input.contentItemId)
+}
+
+export function deleteContentItem(contentItemId:string):{deleted:true}{
+  const database=getDatabase(),item=database.prepare('SELECT title FROM content_items WHERE id=?').get(contentItemId) as {title:string}|undefined
+  if(!item)throw new Error('Content item not found.')
+  database.prepare('DELETE FROM content_items WHERE id=?').run(contentItemId)
+  audit('content.deleted','content_items',contentItemId,{title:item.title})
+  return {deleted:true}
+}
+
 export function transitionContent(contentItemId: string, to: ContentStatus, notes?: string): Record<string, unknown> {
   const database = getDatabase(), current = database.prepare('SELECT status FROM content_items WHERE id = ?').get(contentItemId) as { status: ContentStatus } | undefined
   if (!current) throw new Error('Content item not found.')

@@ -141,4 +141,47 @@ describe('desktop app shell', () => {
     fireEvent.click(screen.getByRole('button',{name:'Save changes'}))
     await waitFor(()=>expect(window.pizzaSocial.invoke).toHaveBeenCalledWith('data:save',expect.objectContaining({entity:'businesses',value:expect.objectContaining({id:'11111111-1111-4111-8111-111111111111',name:'The Pizza Shoppe Updated'})})))
   })
+
+  it('edits and explicitly deletes existing Content Studio records',async()=>{
+    const item={id:'11111111-1111-4111-8111-111111111111',title:'Friday special',brief:'Promote the verified Friday pizza special to local families.',status:'draft',updated_at:1,variants:[{id:'22222222-2222-4222-8222-222222222222',platform:'instagram',copy:'Friday pizza.',metadata_json:'{}'}],generationJobs:[]}
+    const invokeMock=vi.fn(async(channel:string)=>{
+      if(channel==='app:getInfo')return {ok:true,data:{name:'Pizza Promo Pro',version:'0.1.0',online:true,platform:'test'}}
+      if(channel==='onboarding:getStatus')return {ok:true,data:{shouldShow:false,dismissed:true,completionPercent:100,essentialComplete:true,steps:[]}}
+      if(channel==='content:listStudio')return {ok:true,data:[item]}
+      if(channel==='content:updateDraft')return {ok:true,data:{...item,title:'Friday BOGO'}}
+      if(channel==='content:delete')return {ok:true,data:{deleted:true}}
+      return {ok:true,data:[]}
+    })
+    Object.defineProperty(window,'pizzaSocial',{configurable:true,value:{invoke:invokeMock}})
+    vi.spyOn(window,'confirm').mockReturnValue(true)
+    render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
+    fireEvent.click(screen.getByRole('button',{name:'Content'}))
+    fireEvent.click(await screen.findByRole('button',{name:'Edit'}))
+    fireEvent.change(screen.getByDisplayValue('Friday special'),{target:{value:'Friday BOGO'}})
+    fireEvent.click(screen.getByRole('button',{name:'Save and rebuild drafts'}))
+    await waitFor(()=>expect(invokeMock).toHaveBeenCalledWith('content:updateDraft',expect.objectContaining({contentItemId:item.id,title:'Friday BOGO',regenerateVariants:true})))
+    fireEvent.click(screen.getByRole('button',{name:'Delete'}))
+    await waitFor(()=>expect(invokeMock).toHaveBeenCalledWith('content:delete',{contentItemId:item.id,confirmDelete:true}))
+  })
+
+  it('shows and highlights the result of creating platform drafts',async()=>{
+    const created={id:'11111111-1111-4111-8111-111111111111',title:'Friday Night BOGO',brief:'Promote the verified Friday buy one get one pizza special.',status:'draft',updated_at:1,variants:[{id:'22222222-2222-4222-8222-222222222222',platform:'google_business_profile',copy:'Friday offer.',metadata_json:'{}'},{id:'33333333-3333-4333-8333-333333333333',platform:'facebook',copy:'Friday offer.',metadata_json:'{}'},{id:'44444444-4444-4444-8444-444444444444',platform:'instagram',copy:'Friday offer.',metadata_json:'{}'}],generationJobs:[]}
+    let items:typeof created[]=[]
+    const invokeMock=vi.fn(async(channel:string)=>{
+      if(channel==='app:getInfo')return {ok:true,data:{name:'Pizza Promo Pro',version:'0.1.0',online:true,platform:'test'}}
+      if(channel==='onboarding:getStatus')return {ok:true,data:{shouldShow:false,dismissed:true,completionPercent:100,essentialComplete:true,steps:[]}}
+      if(channel==='content:listStudio')return {ok:true,data:items}
+      if(channel==='content:createDraft'){items=[created];return {ok:true,data:created}}
+      return {ok:true,data:[]}
+    })
+    Object.defineProperty(window,'pizzaSocial',{configurable:true,value:{invoke:invokeMock}})
+    render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
+    fireEvent.click(screen.getByRole('button',{name:'Content'}))
+    fireEvent.click(await screen.findByRole('button',{name:'Create content'}))
+    fireEvent.change(screen.getByLabelText('Working title'),{target:{value:'Friday Night BOGO'}})
+    fireEvent.change(screen.getByLabelText('What should this post communicate?'),{target:{value:'Promote the verified Friday buy one get one pizza special.'}})
+    fireEvent.click(screen.getByRole('button',{name:'Create 3 drafts'}))
+    expect(await screen.findByText(/Created “Friday Night BOGO” with 3 platform drafts/)).toBeVisible()
+    expect(screen.getByText('Just created')).toBeVisible()
+  })
 })

@@ -2,14 +2,17 @@ import { expect, test } from '@playwright/test'
 import { _electron as electron } from 'playwright'
 import { access } from 'node:fs/promises'
 import path from 'node:path'
+import { mkdtemp, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 
 const mainEntry = path.resolve(process.cwd(), 'out/main/index.js')
 
 test('launches the desktop application and renders its first window', async () => {
   await access(mainEntry)
+  const userData=await mkdtemp(path.join(tmpdir(),'pizza-promo-pro-e2e-'))
 
   const electronApp = await electron.launch({
-    args: [mainEntry],
+    args: [mainEntry,`--user-data-dir=${userData}`],
     env: {
       ...process.env,
       NODE_ENV: 'test',
@@ -30,9 +33,41 @@ test('launches the desktop application and renders its first window', async () =
     await expect(window.getByRole('heading',{name:'Higgsfield account'})).toBeVisible()
     await expect(window.getByRole('button',{name:'Sign in with Higgsfield'})).toBeVisible()
 
+    await window.getByRole('button',{name:'Business profile'}).click()
+    await window.getByRole('button',{name:'Add business profile'}).click()
+    await window.getByLabel('Business name').fill('E2E Pizza Shop')
+    await window.getByRole('button',{name:'Create record'}).click()
+    await expect(window.getByText('E2E Pizza Shop')).toBeVisible()
+
+    await window.getByRole('button',{name:'Locations'}).click()
+    await window.getByRole('button',{name:'Add location'}).click()
+    await window.getByLabel('Location name').fill('Panorama Plaza')
+    await window.getByLabel('Street address').fill('1601 Penfield Rd')
+    await window.getByLabel('City').fill('Rochester')
+    await window.getByLabel('State or region').fill('New York')
+    await window.getByLabel('Postal code').fill('14625')
+    await window.getByLabel('Time zone').fill('America/New_York')
+    await window.getByRole('button',{name:'Create record'}).click()
+    await expect(window.getByText('Panorama Plaza')).toBeVisible()
+    await expect(window.getByText(/NOT NULL constraint failed/i)).toHaveCount(0)
+
+    await window.getByRole('button',{name:'Brand profile'}).click()
+    await window.getByRole('button',{name:'Add brand profile'}).click()
+    await window.getByLabel('Voice').fill('Friendly and direct')
+    await window.getByLabel('Primary audience').fill('Families')
+    await window.getByLabel('Visual style').fill('Photorealistic')
+    await window.getByRole('button',{name:'Create record'}).click()
+    await expect(window.getByRole('button',{name:'Edit brand profile'})).toBeVisible()
+    await window.getByRole('button',{name:'Edit brand profile'}).click()
+    await window.getByLabel('Voice').fill('Warm and direct')
+    await window.getByRole('button',{name:'Save changes'}).click()
+    await expect(window.getByText('Warm and direct')).toBeVisible()
+    await expect(window.getByText(/UNIQUE constraint failed/i)).toHaveCount(0)
+
     const appPath = await electronApp.evaluate(({ app }) => app.getAppPath())
     expect(appPath).toBeTruthy()
   } finally {
     await electronApp.close()
+    await rm(userData,{recursive:true,force:true})
   }
 })

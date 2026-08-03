@@ -9,7 +9,7 @@ import type { EntityKind } from '../../shared/contracts'
 import { checkConnection, listConnections, removeConnection, saveHiggsfieldConnection, saveSocialConnection } from './connection-service'
 import type { z } from 'zod'
 import type { socialPlatformSchema } from '../../shared/contracts'
-import { createContentDraft, listContentStudio, transitionContent, updateContentVariant } from './content-service'
+import { createContentDraft, deleteContentItem, listContentStudio, transitionContent, updateContentDraft, updateContentVariant } from './content-service'
 import type { ContentStatus } from '../domain/content-status'
 import { generateForContent } from './generation-service'
 import { produceContentPackage } from './agent-service'
@@ -25,6 +25,7 @@ import { connectHiggsfield, getHiggsfieldStatus, selectHiggsfieldWorkspace } fro
 import { estimateHiggsfieldMedia, generateHiggsfieldMedia, getHiggsfieldMediaModels } from './higgsfield-generation-service'
 import type { HiggsfieldAspectRatio, HiggsfieldModelId } from '../../shared/higgsfield-models'
 import { openMediaForReview } from './media-review-service'
+import { importMenuItems, previewMenuUrl } from './menu-import-service'
 
 export function registerAppHandlers(): void {
   registerValidatedHandler('app:getInfo', () => ({
@@ -41,6 +42,8 @@ export function registerAppHandlers(): void {
   registerValidatedHandler('data:save', ({ entity, value }: { entity: EntityKind; value: Record<string, unknown> }) => saveRecord(entity, value))
   registerValidatedHandler('data:remove', ({ entity, id }: { entity: EntityKind; id: string }) => { removeRecord(entity, id); return { id } })
   registerValidatedHandler('media:import', () => importMedia())
+  registerValidatedHandler('menu:previewUrl', ({url}:{url:string}) => previewMenuUrl(url))
+  registerValidatedHandler('menu:importPreview', ({items}:{items:Array<{name:string;description:string;priceCents:number;currency:string}>}) => importMenuItems(items))
   registerValidatedHandler('backup:create', async () => ({ path: await createBackup() }))
   registerValidatedHandler('backup:restore', async () => ({ restored: await restoreBackup() }))
   registerValidatedHandler('connections:list', () => listConnections())
@@ -53,6 +56,8 @@ export function registerAppHandlers(): void {
   registerValidatedHandler('higgsfield:selectWorkspace', ({workspaceId}:{workspaceId:string}) => selectHiggsfieldWorkspace(workspaceId))
   registerValidatedHandler('content:listStudio', () => listContentStudio())
   registerValidatedHandler('content:createDraft', (input: { title: string; brief: string; menuItemId?: string; promotionId?: string; platforms: z.infer<typeof socialPlatformSchema>[] }) => createContentDraft(input))
+  registerValidatedHandler('content:updateDraft', (input:{contentItemId:string;title:string;brief:string;regenerateVariants:true}) => updateContentDraft(input))
+  registerValidatedHandler('content:delete', ({contentItemId}:{contentItemId:string;confirmDelete:true}) => deleteContentItem(contentItemId))
   registerValidatedHandler('content:transition', ({ contentItemId, to, notes }: { contentItemId: string; to: ContentStatus; notes?: string }) => transitionContent(contentItemId, to, notes))
   registerValidatedHandler('content:updateVariant', ({ variantId, copy }: { variantId: string; copy: string }) => updateContentVariant(variantId, copy))
   registerValidatedHandler('media:generateForContent', ({ contentItemId, prompt }: { contentItemId: string; prompt: string }) => generateForContent(contentItemId, prompt))

@@ -69,6 +69,12 @@ Ollama is a first-class local adapter using its native `/api/chat` endpoint with
 
 Transitions are enforced in domain services, not inferred solely from UI state. Approval events and publishing attempts are append-only records.
 
+Content Studio creation returns the newly persisted item, highlights it in the list, and scrolls it into view. Editing a draft brief rebuilds its platform variants from the same verified source links and resets the item to draft. Deletion requires an explicit UI confirmation plus a literal IPC confirmation; relational children are removed by database cascades.
+
+## Menu URL import
+
+The main process fetches public HTTP/HTTPS menu pages only. It rejects embedded credentials, localhost, private/link-local addresses, unsafe redirects, non-HTML/JSON responses, responses above 2 MB, and requests over 15 seconds. Schema.org `MenuItem` and `Product` data is preferred, with a conservative visible-price fallback. Extracted items return as an editable preview, and missing prices remain blank. Only selected items with user-verified prices enter the local menu tables.
+
 ## Local-first behavior
 
 Core planning, editing, review, calendar, and media-library work remains available offline. Features requiring internet access must be identified in the interface. Provider outputs are downloaded to application-controlled local storage before they become media assets.
