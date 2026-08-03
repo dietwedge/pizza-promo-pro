@@ -8,7 +8,7 @@ From this directory, run `python -m http.server 4173`, then open `http://localho
 
 ## Connect Square
 
-Edit `site-config.js` and set the displayed one-time price and the full Square Payment Link URL. No other files need to change.
+Edit `site-config.js` to change the founding price, planned regular price, license-limit label, or full Square Payment Link URL. No other files need to change. The first-50 limit must also be enforced in the Square inventory or fulfillment workflow before sales open.
 
 ## Deploy
 

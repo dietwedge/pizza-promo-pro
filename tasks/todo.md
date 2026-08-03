@@ -297,3 +297,17 @@ Review:
 - The selected headline scored 66/100 in the required mechanical scorer; the complete page scored 83/100 in the CRO audit.
 - Desktop and 390px mobile renders were visually inspected, the local site returned HTTP 200, and core content remains legible without scroll interaction or JavaScript.
 - Square pricing and checkout are configured centrally in `website/site-config.js`; no product claim, testimonial, price, or performance statistic was invented.
+
+## Landing-page pricing offer
+
+- [x] Present the $149 founding price against the planned $299 standard license.
+- [x] Define the first-50 limit, one-location scope, and two-computer activation allowance.
+- [x] Explain permanent use, one year of feature updates, supported-version fixes, and optional $99 major upgrades.
+- [x] Show the planned $499 multi-location path without presenting it as currently available.
+- [x] Verify the revised pricing hierarchy and objection handling on desktop and mobile.
+
+Review:
+
+- The founding license remains the page’s only purchase action; later license tiers provide price context without creating choice paralysis.
+- License ownership and update terms are visible beside the price and repeated in plain-English FAQs.
+- The revised page scored 86/100 in the CRO audit and passed desktop and 390px mobile visual inspection.

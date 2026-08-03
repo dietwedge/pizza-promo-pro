@@ -1,16 +1,20 @@
 const config = window.PPP_SITE_CONFIG ?? {}
 const price = document.querySelector('#display-price')
+const regularPrice = document.querySelector('#regular-price')
+const foundingLimit = document.querySelector('#founding-limit')
 const checkout = document.querySelector('.checkout-link')
 const checkoutStatus = document.querySelector('.checkout-status')
 
 if (price && config.price) price.textContent = config.price
+if (regularPrice && config.regularPrice) regularPrice.textContent = config.regularPrice
+if (foundingLimit && config.foundingLimit) foundingLimit.textContent = config.foundingLimit
 if (checkout && config.checkoutUrl) {
   checkout.href = config.checkoutUrl
   checkout.rel = 'noopener'
 } else if (checkout) {
   checkout.addEventListener('click', (event) => {
     event.preventDefault()
-    if (checkoutStatus) checkoutStatus.textContent = 'Square checkout will connect here when launch pricing is set.'
+    if (checkoutStatus) checkoutStatus.textContent = 'Square checkout will connect here when the purchase link is ready.'
   })
 }
 

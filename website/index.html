@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="content-visibility.css">
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Pizza Promo Pro","applicationCategory":"BusinessApplication","operatingSystem":"Windows, macOS, Linux","description":"A local-first desktop content planning application for independent pizza shops."}
+    {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Pizza Promo Pro","applicationCategory":"BusinessApplication","operatingSystem":"Windows, macOS, Linux","description":"A local-first desktop content planning application for independent pizza shops.","offers":{"@type":"Offer","price":"149","priceCurrency":"USD","availability":"https://schema.org/PreOrder"}}
   </script>
 </head>
 <body>
@@ -139,18 +139,24 @@
         <div>
           <p class="kicker"><span></span> Founding release</p>
           <h2>Put your next week of content on the line.</h2>
-          <p>Get the native Pizza Promo Pro desktop application with a one-time purchase. Final launch pricing and the Square checkout link can be connected without redesigning this page.</p>
-          <ul><li>Desktop app license</li><li>Future app updates</li><li>Bring your own AI provider</li></ul>
+          <p>Get the native Pizza Promo Pro desktop application at half the planned standard price. The first 50 customers keep permanent access to the version they purchase—there is no recurring Pizza Promo Pro fee.</p>
+          <ul><li>One shop or location</li><li>Activate on 2 computers</li><li>1 year of feature updates</li><li>Critical fixes for the supported version</li><li>Bring your own AI provider</li></ul>
         </div>
         <aside>
-          <small>ONE-TIME PURCHASE</small>
-          <strong id="display-price">Founding price</strong>
-          <span>No recurring PPP fee</span>
-          <a class="button button-primary checkout-link" href="#" aria-describedby="checkout-note">Get Pizza Promo Pro <span aria-hidden="true">→</span></a>
+          <small id="founding-limit">FIRST 50 LICENSES</small>
+          <strong id="display-price">$149</strong>
+          <span class="regular-price">Planned standard price <s id="regular-price">$299</s></span>
+          <a class="button button-primary checkout-link" href="#" aria-describedby="checkout-note">Claim a founding license <span aria-hidden="true">→</span></a>
           <p id="checkout-note">Secure checkout powered by Square.</p>
           <p class="checkout-status" role="status" aria-live="polite"></p>
         </aside>
       </div>
+      <div class="license-path" aria-label="Pizza Promo Pro license roadmap">
+        <article class="active-offer"><span>AVAILABLE AT LAUNCH</span><strong>Founding license</strong><b>$149 once</b><p>Single location · Two computers · First 50 customers</p></article>
+        <article><span>AFTER FOUNDING RELEASE</span><strong>Standard license</strong><b>$299 once</b><p>Single location · Two computers</p></article>
+        <article><span>PLANNED</span><strong>Multi-location</strong><b>$499 once</b><p>Up to three locations after multi-location support is verified</p></article>
+      </div>
+      <p class="upgrade-policy"><strong>Your software keeps working.</strong> The license includes one year of feature updates. Future major-version upgrades are optional and planned at $99; critical fixes continue for the supported version.</p>
     </section>
 
     <section class="faq section-shell">
@@ -160,6 +166,8 @@
         <details><summary>Does it include an AI subscription?</summary><p>No. You choose and connect a supported AI provider, or use Ollama locally. Any provider usage charges are paid directly to that provider.</p></details>
         <details><summary>Can it publish automatically?</summary><p>Pizza Promo Pro is designed around human review. Account connections and live publishing capabilities are enabled carefully by provider; content does not bypass approval.</p></details>
         <details><summary>Is this another monthly subscription?</summary><p>No. Pizza Promo Pro is planned as a one-time software purchase. Optional outside services may charge their own fees.</p></details>
+        <details><summary>What happens after the first year?</summary><p>The version you purchased keeps working. You are never forced into a Pizza Promo Pro subscription. Future major-version upgrades are optional and planned at $99.</p></details>
+        <details><summary>How many shops and computers are included?</summary><p>The founding and standard licenses cover one shop or location and activation on up to two computers. A $499 multi-location license for up to three locations is planned after that workflow is verified.</p></details>
       </div>
     </section>
   </main>
