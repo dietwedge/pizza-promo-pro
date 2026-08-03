@@ -85,6 +85,12 @@ Direct account access, scheduling, publishing, analytics, and advertising manage
 
 A no-API delivery path may package approved copy and media, copy content to the clipboard, export local files, and open the platform's normal posting surface for the customer to finish manually. This is a handoff rather than a verified connection: the app must not claim that the post was published or retrieve live results unless the provider confirms them through an authorized API.
 
+### AI strategy and publishable copy use separate contracts
+
+Content Producer treats the customer objective or AI Assistant output as internal strategy only. When a customer-owned provider is configured, a dedicated final-copy request must return one structured caption for each requested platform plus separate internal concept, media-prompt, and timing fields. The offline producer follows the same separation with deterministic, fact-grounded copy.
+
+Before persistence, generated packages must have exact platform coverage, remain inside platform character limits, require human approval, pass factual-claim validation, and contain no planning scaffolding or markdown headings in titles or captions. Internal strategy remains stored as the editable brief and is visibly labeled as internal direction; it is never a content variant.
+
 ## ADR-012: Unified, provenance-labelled performance snapshots
 
 **Status:** Accepted

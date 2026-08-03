@@ -575,3 +575,23 @@ Review:
 - Draft and review-ready packages now expose package-detail editing in Review Desk in addition to the existing platform-copy editor. Saving package details rebuilds the platform drafts through the existing validated service.
 - The complete approve, reopen, edit, final-review, reapprove, and Calendar path passes in the real Electron application. The corrected approved state was visually inspected at 1440 × 940.
 - Type checking, linting, 69 automated tests, the Electron end-to-end test, Windows x64 packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.
+
+## Stage twenty-three — Strategy-to-copy AI generation boundary
+
+- [x] Stop treating the Content Producer objective or assistant plan as publishable post copy.
+- [x] Use the customer-configured AI provider to write structured, platform-specific captions from strategy and saved facts.
+- [x] Make the offline producer generate fresh customer-facing captions instead of echoing the input.
+- [x] Validate exact platform coverage, character limits, and human-review metadata before persistence.
+- [x] Reject planning scaffolding, markdown headings, and analysis labels from final captions and package titles.
+- [x] Add deterministic, parser, service, renderer, and Electron regression coverage; package, commit, and publish.
+
+Review:
+
+- The Content Producer now selects the configured customer-owned OpenAI, compatible, or Ollama provider when one is enabled. The local deterministic producer remains the offline fallback.
+- The model receives the customer input explicitly as internal strategy and must return a strict JSON package containing a short internal concept, exactly one finished caption per requested platform, separate media prompts, and separate timing guidance.
+- The offline producer now derives a fresh customer-facing lead from the strategic intent and saved facts instead of placing the objective at the top of every caption. It also generates a clean internal package title.
+- A shared validator rejects missing, duplicate, or unexpected platforms; over-limit captions; planning labels including Post Idea, Theme, Focus, Suggested Caption Angle, Visual Suggestion, Strategy, and Rationale; and markdown headings before persistence.
+- Every generated caption also passes the existing saved-fact claim validator before it can be stored. Human review metadata remains mandatory.
+- Content Studio visibly labels the retained source text as “Internal direction,” separating it from the publishable variant grid.
+- The Electron test pastes a plan containing Post Idea, Theme, and Visual Suggestion and proves that none appears in the three generated platform posts.
+- Type checking, linting, 74 automated tests, the Electron end-to-end test, Windows x64 packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.

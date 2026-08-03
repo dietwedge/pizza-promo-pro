@@ -57,3 +57,9 @@
 - Review approval must never strand a customer in a read-only state before scheduling or publishing.
 - Approved content needs an explicit “Reopen for editing” action that removes approval, preserves the record, and restores package and platform-copy editing.
 - Explain the state change in plain language so the customer knows the package must be reviewed and approved again.
+
+## 2026-08-04 — Strategy is input to copywriting, never the copy itself
+
+- AI planning output may contain themes, focus notes, caption angles, and visual suggestions; none of that scaffolding belongs in customer-facing platform captions.
+- Content production needs a distinct second writing step with a structured platform-output contract, even when the customer pastes a detailed assistant plan.
+- Validate and reject analysis labels, markdown headings, missing platforms, and over-limit captions before saving any generated package.

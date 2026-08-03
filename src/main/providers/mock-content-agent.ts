@@ -14,7 +14,7 @@ export class MockContentAgent implements ContentAgent {
     const subject = menuSource?.label ?? promotionSource?.label ?? 'the pizza shop'
     return {
       provider: this.id,
-      concept: `${request.objective.trim()} — centered on ${subject}`,
+      concept: `${subject} content package`.slice(0,140),
       variants: request.platforms.map((platform) => ({ platform, copy: createGroundedCopy(platform, request.objective, facts) })),
       mediaPrompts: [
         { kind: 'image', prompt: `Create a polished social image concept for ${subject}. Match the saved brand style. Do not add prices, text, ingredients, awards, or claims that are not present in the supplied facts.` },

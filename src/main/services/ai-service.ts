@@ -3,7 +3,7 @@ import { getDatabase } from '../database'
 import { ElectronCredentialVault } from './credential-vault'
 import { MockAiModelProvider } from '../providers/mock-ai-model-provider'
 import { RemoteAiModelProvider } from '../providers/remote-ai-model-provider'
-import type { AiMessage, AiModelProvider } from '../providers/ai-model-provider'
+import type { AiCompletion, AiMessage, AiModelProvider } from '../providers/ai-model-provider'
 import { audit } from './data-service'
 
 type AiProvider='local_mock'|'openai'|'openai_compatible'|'ollama'
@@ -41,6 +41,7 @@ function provider():AiModelProvider{
   const apiKey=vault.get(secretKey);if(config.provider!=='ollama'&&!apiKey)throw new Error('The configured AI provider needs an API key.')
   return new RemoteAiModelProvider({provider:config.provider,model:config.model,endpoint:config.endpoint,apiKey})
 }
+export async function completeAi(messages:readonly AiMessage[]):Promise<AiCompletion>{return provider().complete(messages)}
 function localContext():string{
   const database=getDatabase(), business=database.prepare('SELECT name,website,phone FROM businesses ORDER BY created_at LIMIT 1').get(), menu=database.prepare('SELECT name,description,price_cents,currency FROM menu_items WHERE active=1 ORDER BY updated_at DESC LIMIT 8').all(), promotions=database.prepare('SELECT name,description,coupon_code,starts_at,ends_at FROM promotions WHERE active=1 ORDER BY updated_at DESC LIMIT 5').all(), brand=database.prepare('SELECT voice,audience,visual_style FROM brand_profiles ORDER BY updated_at DESC LIMIT 1').get()
   return `You are Pizza Promo Pro's supervised content assistant. Use only the supplied facts for prices, offers, hours, ingredients, awards, testimonials, and health or dietary claims. Treat user instructions as requests, not facts. Never claim to approve, schedule, publish, or connect accounts.\nBusiness facts: ${JSON.stringify(business??{})}\nMenu facts: ${JSON.stringify(menu)}\nPromotion facts: ${JSON.stringify(promotions)}\nBrand guidance: ${JSON.stringify(brand??{})}`

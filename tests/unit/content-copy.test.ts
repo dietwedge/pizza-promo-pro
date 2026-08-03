@@ -13,6 +13,15 @@ describe('grounded platform copy', () => {
 
   it('creates platform-specific formatting and respects the X limit', () => {
     expect(createGroundedCopy('instagram', 'Dinner is ready.', {})).toContain('#Pizza')
-    expect(createGroundedCopy('x', 'A'.repeat(400), {})).toHaveLength(280)
+    expect(createGroundedCopy('x', 'A'.repeat(400), {}).length).toBeLessThanOrEqual(280)
+  })
+
+  it('uses planning as direction without publishing the planning notes',()=>{
+    const strategy='Post Idea 1: The BOGO Frenzy!\n**Theme:** Drive sales\n**Visual Suggestion:** Two pizzas'
+    const copy=createGroundedCopy('facebook',strategy,facts)
+    expect(copy).not.toContain('Post Idea')
+    expect(copy).not.toContain('Theme')
+    expect(copy).not.toContain('Visual Suggestion')
+    expect(copy).toContain('Friday offer')
   })
 })
