@@ -40,6 +40,28 @@ describe('desktop app shell', () => {
     expect(screen.getByRole('option', { name: 'Ollama — local AI' })).toBeVisible()
   })
 
+  it('shows Higgsfield connection progress and the result beside the button', async () => {
+    let finishCheck: ((value: {ok:true;data:{valid:boolean;message:string;liveVerified:boolean}})=>void)|undefined
+    const invokeMock=vi.fn(async (channel:string)=>{
+      if(channel==='app:getInfo')return {ok:true,data:{name:'Pizza Promo Pro',version:'0.1.0',online:true,platform:'test'}}
+      if(channel==='updates:getStatus')return {ok:true,data:{state:'unavailable',currentVersion:'0.1.0',availableVersion:null,progressPercent:null,message:'Unavailable in tests.'}}
+      if(channel==='ai:getConfig')return {ok:true,data:{provider:'local_mock',model:'local-deterministic-v1',endpoint:'',hasApiKey:false,liveEnabled:false,updatedAt:0}}
+      if(channel==='onboarding:getStatus')return {ok:true,data:{shouldShow:false,dismissed:true,completionPercent:100,essentialComplete:true,steps:[]}}
+      if(channel==='connections:list')return {ok:true,data:[{id:'connection.higgsfield_mcp',kind:'higgsfield_mcp',provider:'higgsfield',displayName:'Higgsfield MCP',endpoint:'https://example.com/mcp',status:'configured',liveEnabled:false,hasSecret:false,updatedAt:1}]}
+      if(channel==='connections:check')return new Promise(resolve=>{finishCheck=resolve})
+      return {ok:true,data:[]}
+    })
+    Object.defineProperty(window,'pizzaSocial',{configurable:true,value:{invoke:invokeMock}})
+    render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
+    fireEvent.click(screen.getByRole('button',{name:'Settings'}))
+    const checkButton=await screen.findByRole('button',{name:'Check connection'})
+    fireEvent.click(checkButton)
+    expect(await screen.findByRole('button',{name:'Checking…'})).toBeDisabled()
+    expect(screen.getByText('Contacting the MCP server…')).toBeVisible()
+    finishCheck?.({ok:true,data:{valid:true,message:'Connected to Higgsfield. 4 tools available; no tools were run.',liveVerified:true}})
+    expect(await screen.findByText('Connected to Higgsfield. 4 tools available; no tools were run.')).toBeVisible()
+  })
+
   it('provides a dedicated supervised AI chat workspace', async () => {
     render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
     fireEvent.click(screen.getByRole('button', { name: 'AI Assistant' }))

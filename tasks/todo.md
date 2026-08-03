@@ -346,3 +346,17 @@ Review:
 - The production site is live at `https://pizzapromopro.vercel.app/` under the requested Vercel project name.
 - The final alias returns HTTP 200 with the correct canonical URL, content security policy, referrer policy, and MIME-sniffing protection.
 - Local Vercel credentials and project metadata remain excluded from source control.
+
+## Higgsfield connection-check feedback correction
+
+- [x] Reproduce the apparently unresponsive Settings action.
+- [x] Show immediate progress and the final result directly beside the connection button.
+- [x] Disable duplicate checks while the request is running and preserve accessible status announcements.
+- [x] Add UI regression coverage and re-run the complete verification suite.
+
+Review:
+
+- The request was running, but its only feedback appeared in the Settings banner above the user's scroll position.
+- The button now immediately changes to a disabled `Checking…` state with a spinner, and the progress or final server response appears directly below the MCP form.
+- The result is announced through an accessible live status and is no longer duplicated in the page-level banner.
+- Type checks, lint, 47 automated tests, the Electron smoke test, and Windows packaging pass.
