@@ -79,6 +79,9 @@ test('launches the desktop application and renders its first window', async () =
 
     await window.getByRole('button',{name:'Brand profile'}).click()
     await window.getByRole('button',{name:'Add brand profile'}).click()
+    const interviewFields=window.locator('.brand-question-list textarea')
+    await expect(interviewFields).toHaveCount(5)
+    for(const field of await interviewFields.all()){const box=await field.boundingBox();expect(box?.width).toBeGreaterThan(350);expect(box?.height).toBeGreaterThan(80)}
     await window.getByLabel('What should people understand about this pizza shop?').fill('A neighborhood pizza shop that values dependable local service.')
     await window.getByLabel('Who are the customers you most want to reach?').fill('Local families and nearby workers.')
     await window.getByLabel('What makes the shop meaningfully different?').fill('Detroit-style pizza and a welcoming neighborhood experience')

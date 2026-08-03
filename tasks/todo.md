@@ -507,3 +507,18 @@ Review:
 - Brand Profile now includes a five-question guided interview. The configured customer-owned model or Ollama proposes voice, audience, visual direction, positioning, and rules; the offline provider offers the same safe workflow.
 - “Use this profile” fills the editable form but does not save. Suggested rules remain recommendations rather than silently changing the separate Brand Rules table.
 - Type checks, lint, 65 automated tests, the expanded isolated-profile Electron test, Windows packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.
+
+## Stage nineteen — Brand Interview layout correction
+
+- [x] Replace the collapsed two-column fields with a deliberate guided-question sequence.
+- [x] Give every question a readable prompt, concise helper text, and a full-width controlled textarea.
+- [x] Rebalance the header and action footer so the interview reads as one focused workflow.
+- [x] Add responsive and regression coverage inside the real shared editor.
+- [x] Verify the actual Electron render, run all quality gates, package, commit, and publish.
+
+Review:
+
+- The shared editor styled its standard inputs but not the new nested textareas, allowing browser defaults to collapse the interview controls beside their labels.
+- The interview now presents five numbered, sequential questions with helper copy, consistently sized textareas, responsive stacking, and a clearly separated action footer.
+- The actual Electron render was inspected at 1440 × 940. End-to-end coverage also verifies all five textareas render wider than 350 pixels and taller than 80 pixels.
+- Type checking, linting, 65 automated tests, the Electron end-to-end test, Windows x64 packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.

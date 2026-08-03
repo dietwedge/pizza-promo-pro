@@ -33,3 +33,9 @@
 - A successful cost estimate and completed provider job do not make media generation usable by themselves; verify the returned asset is downloaded, persisted, and rendered in the originating workflow.
 - Long-running generation must show a durable job state, a visible result or actionable failure, and a retry/review path after the initiating control stops spinning.
 - Exercise the real provider response shape and local media URL bridge, not only mocked completion records.
+
+## 2026-08-04 — Test new form layouts inside their real parent container
+
+- A component-level interaction test can pass while shared editor and browser-default styles collapse labels and textareas into an unusable layout.
+- Every new form pattern must explicitly define label layout, control width, typography, spacing, and responsive behavior instead of relying on inherited form styles.
+- Verify the actual Electron render at the target desktop size before shipping visually significant workflows.

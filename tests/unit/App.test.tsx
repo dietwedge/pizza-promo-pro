@@ -124,6 +124,8 @@ describe('desktop app shell', () => {
     render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
     fireEvent.click(screen.getByRole('button',{name:'Brand profile'}))
     fireEvent.click(await screen.findByRole('button',{name:'Add brand profile'}))
+    expect(document.querySelectorAll('.brand-question-list textarea')).toHaveLength(5)
+    expect(document.querySelector('.brand-interview-actions .primary')).toHaveTextContent('Build my brand profile')
     fireEvent.change(screen.getByLabelText('What should people understand about this pizza shop?'),{target:{value:'A dependable neighborhood shop with a long local story.'}})
     fireEvent.change(screen.getByLabelText('Who are the customers you most want to reach?'),{target:{value:'Local families and nearby workers.'}})
     fireEvent.click(screen.getByRole('button',{name:'Build my brand profile'}))
