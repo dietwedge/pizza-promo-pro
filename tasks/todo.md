@@ -540,3 +540,22 @@ Review:
 - Selects and date controls now share consistent spacing, borders, focus treatment, disabled states, and custom light/dark dropdown indicators throughout the app.
 - Review Desk and Calendar were visually inspected in the real Electron window at 1440 × 940. The Electron test proves package approval, Calendar availability, month-grid structure, and the non-native select appearance.
 - Type checking, linting, 67 automated tests, the Electron end-to-end test, Windows x64 packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.
+
+## Stage twenty-one — Unified content production journey
+
+- [x] Replace the competing AI and manual creation panels with one clearly explained production starting point.
+- [x] Show the complete idea-to-publish journey and identify exactly what the app does at each step.
+- [x] Turn saved content into a production queue with one obvious next action per package.
+- [x] Keep manual drafting available as a secondary path without competing with the recommended AI-assisted flow.
+- [x] Document direct API/OAuth publishing versus no-API manual platform handoff as separate capabilities.
+- [x] Add renderer and Electron regression coverage, visually inspect the workflow, run all release gates, package, commit, and publish.
+
+Review:
+
+- Content Studio now opens with a four-stage roadmap: describe the outcome, build platform drafts, add an optional visual, and review and deliver. The roadmap explicitly states where AI stops and where the customer decides.
+- The recommended AI-assisted path now asks one plain-English business-outcome question, explains its saved fact sources, groups platform choices as a distinct decision, and states that it creates drafts only.
+- Manual content creation and open-ended AI chat remain available as secondary actions rather than equal competing workflows.
+- Saved packages now appear in a Production queue. Draft, review-ready, and approved packages each show one stage-specific next action leading to Higgsfield, Review Desk, or Calendar.
+- Architecture documentation now distinguishes verified provider API/OAuth delivery from a no-API manual handoff. Password capture, session-cookie reuse, and browser automation are not accepted as social account connections.
+- The redesigned page was visually inspected in the real Electron window at 1440 × 940. Renderer and Electron coverage prove the roadmap, guided producer input, AI package request, saved-media visibility, and review handoff.
+- Type checking, linting, 68 automated tests, the Electron end-to-end test, Windows x64 packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.

@@ -258,4 +258,24 @@ describe('desktop app shell', () => {
     expect(await screen.findByText(/Created “Friday Night BOGO” with 3 platform drafts/)).toBeVisible()
     expect(screen.getByText('Just created')).toBeVisible()
   })
+
+  it('guides AI-assisted content production through one explained starting point',async()=>{
+    const invokeMock=vi.fn(async(channel:string)=>{
+      if(channel==='app:getInfo')return {ok:true,data:{name:'Pizza Promo Pro',version:'0.1.0',online:true,platform:'test'}}
+      if(channel==='onboarding:getStatus')return {ok:true,data:{shouldShow:false,dismissed:true,completionPercent:100,essentialComplete:true,steps:[]}}
+      if(channel==='content:listStudio')return {ok:true,data:[]}
+      if(channel==='agent:producePackage')return {ok:true,data:{variantCount:3,sources:[{type:'promotion',label:'Friday special'}]}}
+      return {ok:true,data:[]}
+    })
+    Object.defineProperty(window,'pizzaSocial',{configurable:true,value:{invoke:invokeMock}})
+    render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
+    fireEvent.click(screen.getByRole('button',{name:'Content'}))
+    expect(await screen.findByLabelText('Content production workflow')).toBeVisible()
+    expect(screen.getByText('Describe the outcome')).toBeVisible()
+    expect(screen.getByText('Review and deliver')).toBeVisible()
+    fireEvent.change(screen.getByLabelText('Content direction'),{target:{value:'Bring in more family dinner orders this Friday.'}})
+    fireEvent.click(screen.getByRole('button',{name:'Build 3 platform drafts'}))
+    await waitFor(()=>expect(invokeMock).toHaveBeenCalledWith('agent:producePackage',{objective:'Bring in more family dinner orders this Friday.',platforms:['google_business_profile','facebook','instagram']}))
+    expect(await screen.findByText(/created 3 grounded drafts/i)).toBeVisible()
+  })
 })

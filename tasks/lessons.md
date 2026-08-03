@@ -45,3 +45,9 @@
 - A review page is not useful merely because it displays editable copy; expose the package-level decision that advances or reverses the workflow.
 - A page named Calendar must provide a calendar-shaped planning view, with the operational queue as supporting detail rather than the entire experience.
 - Treat selects, date fields, and other native controls as one shared design system so new workflows do not fall back to generic browser presentation.
+
+## 2026-08-04 — Design the whole production journey before polishing its pages
+
+- Separate pages can each look finished while the product still feels confusing if creation, visual generation, review, and delivery compete or duplicate decisions.
+- Content production needs one recommended starting point, a visible end-to-end sequence, and exactly one next action on every saved package.
+- Keep expert or manual paths available but visually secondary; do not make a new customer choose between two equally prominent creation systems before understanding either one.

@@ -79,6 +79,12 @@ Advertising accounts are distinct from organic social connections. The local fou
 
 Organic publishing connections and advertising accounts are stored and authorized separately. Paid-media integrations begin with local drafts and read-only reporting. Creating or changing live campaigns, audiences, bids, or budgets requires provider-specific approval plus a second explicit human approval inside the app. No AI component may supply that approval.
 
+### Direct social delivery and manual handoff are separate capabilities
+
+Direct account access, scheduling, publishing, analytics, and advertising management require each platform's supported API and OAuth consent flow, including any provider app-review or project-approval requirements. Pizza Promo Pro will implement those adapters one platform at a time and will never treat browser automation, stored passwords, or session-cookie reuse as an account connection.
+
+A no-API delivery path may package approved copy and media, copy content to the clipboard, export local files, and open the platform's normal posting surface for the customer to finish manually. This is a handoff rather than a verified connection: the app must not claim that the post was published or retrieve live results unless the provider confirms them through an authorized API.
+
 ## ADR-012: Unified, provenance-labelled performance snapshots
 
 **Status:** Accepted
