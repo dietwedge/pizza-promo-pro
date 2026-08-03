@@ -1,0 +1,55 @@
+appId: com.pizzasocialhub.desktop
+productName: Pizza Promo Pro
+
+directories:
+  output: release
+
+files:
+  - out/**
+  - package.json
+  - node_modules/**
+
+asar: true
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  artifactName: "${productName}-${version}-windows-${arch}.${ext}"
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: false
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+
+mac:
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+    - target: zip
+      arch:
+        - x64
+        - arm64
+  category: public.app-category.business
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  artifactName: "${productName}-${version}-macos-${arch}.${ext}"
+
+linux:
+  target:
+    - target: AppImage
+      arch:
+        - x64
+    - target: deb
+      arch:
+        - x64
+  category: Office
+  synopsis: Local-first social content planning for pizza businesses
+  artifactName: "${productName}-${version}-linux-${arch}.${ext}"
+
+publish: null
