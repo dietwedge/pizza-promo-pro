@@ -272,7 +272,13 @@ Review:
 
 ## Public GitHub repository launch
 
-- [ ] Audit the publication set for credentials, local data, generated builds, and private artifacts.
-- [ ] Create a clean initial commit on the `main` branch.
-- [ ] Create the public `dietwedge/pizza-promo-pro` repository and push the source.
-- [ ] Verify repository visibility, remote configuration, and GitHub Actions availability.
+- [x] Audit the publication set for credentials, local data, generated builds, and private artifacts.
+- [x] Create a clean initial commit on the `main` branch.
+- [x] Create the public `dietwedge/pizza-promo-pro` repository and push the source.
+- [x] Verify repository visibility, remote configuration, and GitHub Actions availability.
+
+Review:
+
+- The public repository is live at `https://github.com/dietwedge/pizza-promo-pro` with `main` as its default branch.
+- Local credentials, databases, installers, dependencies, compiled output, and test artifacts are excluded from Git.
+- `origin/main` tracking is configured and the initial desktop-installer workflow started successfully.
