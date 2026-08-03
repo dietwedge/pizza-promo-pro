@@ -559,3 +559,19 @@ Review:
 - Architecture documentation now distinguishes verified provider API/OAuth delivery from a no-API manual handoff. Password capture, session-cookie reuse, and browser automation are not accepted as social account connections.
 - The redesigned page was visually inspected in the real Electron window at 1440 × 940. Renderer and Electron coverage prove the roadmap, guided producer input, AI package request, saved-media visibility, and review handoff.
 - Type checking, linting, 68 automated tests, the Electron end-to-end test, Windows x64 packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.
+
+## Stage twenty-two — Reversible review approval
+
+- [x] Let an approved package be explicitly reopened and unapproved from Review Desk.
+- [x] Return reopened packages to editable draft state without duplicating the record.
+- [x] Make package details and every platform version editable from the review workflow.
+- [x] Explain the consequence of reopening before the customer acts.
+- [x] Add renderer and Electron regression coverage, visually inspect the approved state, run release gates, package, commit, and publish.
+
+Review:
+
+- Approved packages now show a prominent “Reopen for editing” action beside their approval state. The surrounding copy explains that reopening removes approval and unlocks every version.
+- Reopening uses the existing validated `approved → draft` transition, preserves the package and variant IDs, and requires the package to pass through final review and approval again.
+- Draft and review-ready packages now expose package-detail editing in Review Desk in addition to the existing platform-copy editor. Saving package details rebuilds the platform drafts through the existing validated service.
+- The complete approve, reopen, edit, final-review, reapprove, and Calendar path passes in the real Electron application. The corrected approved state was visually inspected at 1440 × 940.
+- Type checking, linting, 69 automated tests, the Electron end-to-end test, Windows x64 packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.

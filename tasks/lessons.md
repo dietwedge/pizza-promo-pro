@@ -51,3 +51,9 @@
 - Separate pages can each look finished while the product still feels confusing if creation, visual generation, review, and delivery compete or duplicate decisions.
 - Content production needs one recommended starting point, a visible end-to-end sequence, and exactly one next action on every saved package.
 - Keep expert or manual paths available but visually secondary; do not make a new customer choose between two equally prominent creation systems before understanding either one.
+
+## 2026-08-04 — Approval is a reversible checkpoint until delivery
+
+- Review approval must never strand a customer in a read-only state before scheduling or publishing.
+- Approved content needs an explicit “Reopen for editing” action that removes approval, preserves the record, and restores package and platform-copy editing.
+- Explain the state change in plain language so the customer knows the package must be reviewed and approved again.

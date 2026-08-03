@@ -170,6 +170,26 @@ describe('desktop app shell', () => {
     expect(await screen.findByText('Friday family night is approved and ready to schedule.')).toBeVisible()
   })
 
+  it('reopens approved content and restores editing inside Review Desk',async()=>{
+    const item={id:'11111111-1111-4111-8111-111111111111',title:'Friday family night',brief:'A verified Friday offer.',status:'approved',updated_at:1,variants:[{id:'22222222-2222-4222-8222-222222222222',platform:'instagram',copy:'Friday family night is ready.',metadata_json:'{}'}],generationJobs:[]}
+    let status='approved'
+    const invokeMock=vi.fn(async(channel:string,request?:unknown)=>{
+      if(channel==='app:getInfo')return {ok:true,data:{name:'Pizza Promo Pro',version:'0.1.0',online:true,platform:'test'}}
+      if(channel==='onboarding:getStatus')return {ok:true,data:{shouldShow:false,dismissed:true,completionPercent:100,essentialComplete:true,steps:[]}}
+      if(channel==='content:listStudio')return {ok:true,data:[{...item,status}]}
+      if(channel==='content:transition'){status=(request as {to:string}).to;return {ok:true,data:{...item,status}}}
+      return {ok:true,data:[]}
+    })
+    Object.defineProperty(window,'pizzaSocial',{configurable:true,value:{invoke:invokeMock}})
+    render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
+    fireEvent.click(screen.getByRole('button',{name:'Review desk'}))
+    fireEvent.click(await screen.findByRole('button',{name:'Reopen for editing'}))
+    await waitFor(()=>expect(invokeMock).toHaveBeenCalledWith('content:transition',{contentItemId:item.id,to:'draft'}))
+    expect(await screen.findByText(/is unapproved and editable again/i)).toBeVisible()
+    expect(await screen.findByRole('button',{name:'Edit platform copy'})).toBeVisible()
+    expect(screen.getByRole('button',{name:'Edit'})).toBeVisible()
+  })
+
   it('presents approved content in a structured monthly calendar',async()=>{
     const item={id:'11111111-1111-4111-8111-111111111111',title:'Friday family night',brief:'A verified Friday offer.',status:'approved',updated_at:1,variants:[],generationJobs:[]}
     const invokeMock=vi.fn(async(channel:string)=>{
