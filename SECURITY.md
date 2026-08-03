@@ -46,6 +46,8 @@ Higgsfield generation accepts only validated image/video profiles and approved m
 
 Menu URL imports are main-process-only and defend against server-side request forgery. URLs must be public HTTP/HTTPS endpoints without embedded credentials; DNS results and every redirect are checked against loopback, private, and link-local ranges. Fetches are time- and size-bounded, accept only HTML/JSON, and never execute page JavaScript. Embedded framework payload parsing is data-only, requires a bounded `menu` object shape, ignores malformed payloads, and caps the preview at 200 deduplicated items. Extraction produces an untrusted preview only. The customer must review names, descriptions, selections, and prices before a separately validated import request writes local records.
 
+Storefront branding is detected only from exact Clover, Square, Slice, and Toast hostnames; lookalike domains remain generic. Public menu import never receives account credentials or grants ongoing provider access. AI promotion suggestions are bounded structured proposals, grounded with local facts, and cannot write promotion records. The customer must apply the suggestion, choose dates and value, review the terms, and explicitly save it through the normal validated data path.
+
 Customer-owned AI keys use the same credential vault. AI requests run only from the main process with validated HTTPS or localhost endpoints, bounded timeouts, and redirects disabled. Chat receives a factual context package and has no IPC capability for approval, scheduling, publishing, filesystem access, or credentials.
 
 ## Publishing safeguards

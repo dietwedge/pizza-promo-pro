@@ -8,6 +8,7 @@ import { audit } from './data-service'
 
 type AiProvider='local_mock'|'openai'|'openai_compatible'|'ollama'
 type AiConfig={provider:AiProvider;model:string;endpoint:string;hasApiKey:boolean;liveEnabled:boolean;updatedAt:number}
+export type PromotionSuggestion={name:string;description:string;couponCode:string;terms:string;rationale:string;provider:string;model:string}
 const configKey='connection.ai_model', secretKey='ai.model.api_key', vault=new ElectronCredentialVault()
 
 function validateEndpoint(raw:string,provider:AiProvider):string{
@@ -42,6 +43,32 @@ function provider():AiModelProvider{
 function localContext():string{
   const database=getDatabase(), business=database.prepare('SELECT name,website,phone FROM businesses ORDER BY created_at LIMIT 1').get(), menu=database.prepare('SELECT name,description,price_cents,currency FROM menu_items WHERE active=1 ORDER BY updated_at DESC LIMIT 8').all(), promotions=database.prepare('SELECT name,description,coupon_code,starts_at,ends_at FROM promotions WHERE active=1 ORDER BY updated_at DESC LIMIT 5').all(), brand=database.prepare('SELECT voice,audience,visual_style FROM brand_profiles ORDER BY updated_at DESC LIMIT 1').get()
   return `You are Pizza Promo Pro's supervised content assistant. Use only the supplied facts for prices, offers, hours, ingredients, awards, testimonials, and health or dietary claims. Treat user instructions as requests, not facts. Never claim to approve, schedule, publish, or connect accounts.\nBusiness facts: ${JSON.stringify(business??{})}\nMenu facts: ${JSON.stringify(menu)}\nPromotion facts: ${JSON.stringify(promotions)}\nBrand guidance: ${JSON.stringify(brand??{})}`
+}
+function promotionFacts():{business:string;menu:Array<{name:string;description:string|null;priceCents:number;currency:string}>;brand:Record<string,unknown>} {
+  const database=getDatabase(),business=database.prepare('SELECT name FROM businesses ORDER BY created_at LIMIT 1').get() as {name?:string}|undefined
+  const menu=database.prepare('SELECT name,description,price_cents AS priceCents,currency FROM menu_items WHERE active=1 ORDER BY updated_at DESC LIMIT 12').all() as Array<{name:string;description:string|null;priceCents:number;currency:string}>
+  const brand=(database.prepare('SELECT voice,audience,visual_style AS visualStyle FROM brand_profiles ORDER BY updated_at DESC LIMIT 1').get()??{}) as Record<string,unknown>
+  return {business:business?.name??'the pizza shop',menu,brand}
+}
+function promotionJson(text:string):Omit<PromotionSuggestion,'provider'|'model'> {
+  const match=text.match(/\{[\s\S]*\}/);if(!match)throw new Error('The AI response did not contain a usable promotion. Try again with a more specific goal.')
+  let value:unknown;try{value=JSON.parse(match[0])}catch{throw new Error('The AI response could not be read as a promotion. Try again.')}
+  if(!value||typeof value!=='object')throw new Error('The AI response did not contain a usable promotion.')
+  const record=value as Record<string,unknown>,read=(key:string,max:number)=>typeof record[key]==='string'?record[key].trim().slice(0,max):''
+  const result={name:read('name',120),description:read('description',1000),couponCode:read('couponCode',80).toUpperCase(),terms:read('terms',1000),rationale:read('rationale',500)}
+  if(result.name.length<3||result.description.length<10)throw new Error('The AI response was missing a promotion name or offer details. Try again.')
+  return result
+}
+export async function suggestPromotion(goal:string):Promise<PromotionSuggestion>{
+  const config=getAiConfig(),facts=promotionFacts()
+  if(config.provider==='local_mock'){
+    const featured=facts.menu[0],subject=featured?.name??'a customer favorite'
+    const result={name:`${subject} night`,description:`Create a limited-time offer centered on ${subject}. Choose the exact discount or bundle value before saving.`,couponCode:'',terms:'Valid at participating location during the dates you set. Cannot be combined with other offers.',rationale:`A focused offer gives ${facts.business} one clear reason to order while keeping the value and dates under your control.`,provider:'local_mock',model:'local-deterministic-v1'}
+    audit('ai.promotion.suggested','promotions',null,{provider:result.provider,model:result.model,menuFacts:facts.menu.length});return result
+  }
+  const completion=await provider().complete([{role:'system',content:`You create editable promotion ideas for a pizza-shop owner. Return only one JSON object with string fields name, description, couponCode, terms, rationale. Ground menu names and prices only in these saved facts: ${JSON.stringify(facts)}. The requested discount, bundle, or code is a proposal, not an existing fact. Never invent ingredients, dietary claims, awards, customer claims, or store hours. Keep the offer operationally simple and make terms explicit.`},{role:'user',content:`Promotion goal: ${goal}`}])
+  const parsed=promotionJson(completion.text);audit('ai.promotion.suggested','promotions',null,{provider:completion.provider,model:completion.model,menuFacts:facts.menu.length})
+  return {...parsed,provider:completion.provider,model:completion.model}
 }
 function defaultThread():string{
   const database=getDatabase(), existing=database.prepare('SELECT id FROM ai_chat_threads ORDER BY created_at LIMIT 1').get() as {id:string}|undefined

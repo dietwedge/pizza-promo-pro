@@ -40,6 +40,8 @@ describe('IPC contracts', () => {
   it('rejects unknown AI providers and empty chat messages', () => {
     expect(() => ipcContracts['ai:saveConfig'].request.parse({ provider: 'mystery-ai', model: 'x' })).toThrow()
     expect(() => ipcContracts['ai:sendChat'].request.parse({ content: ' ' })).toThrow()
+    expect(ipcContracts['ai:suggestPromotion'].request.parse({goal:'Bring families in on Tuesday nights'})).toBeTruthy()
+    expect(()=>ipcContracts['ai:suggestPromotion'].request.parse({goal:'sale'})).toThrow()
   })
 
   it('bounds editable variant copy at the IPC boundary', () => {

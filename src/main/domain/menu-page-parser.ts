@@ -1,4 +1,14 @@
 export type MenuPreviewItem={name:string;description:string;priceCents:number|null;currency:string;selected:boolean}
+export type MenuProvider='clover'|'square'|'slice'|'toast'|'other'
+
+export function detectMenuProvider(raw:string):MenuProvider{
+  const host=new URL(raw).hostname.toLowerCase()
+  if(host==='clover.com'||host.endsWith('.clover.com')||host==='cloveronline.com'||host.endsWith('.cloveronline.com'))return 'clover'
+  if(host==='square.site'||host.endsWith('.square.site')||host==='squareup.com'||host.endsWith('.squareup.com'))return 'square'
+  if(host==='slicelife.com'||host.endsWith('.slicelife.com'))return 'slice'
+  if(host==='toasttab.com'||host.endsWith('.toasttab.com')||host==='toast.site'||host.endsWith('.toast.site'))return 'toast'
+  return 'other'
+}
 
 function decode(value:string):string{return value.replace(/<[^>]+>/g,' ').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;|&apos;/gi,"'").replace(/&nbsp;/gi,' ').replace(/\s+/g,' ').trim()}
 function priceCents(value:unknown):number|null{if(typeof value==='number'&&Number.isFinite(value))return Math.round(value*100);if(typeof value!=='string')return null;const match=value.replace(/,/g,'').match(/\d+(?:\.\d{1,2})?/);return match?Math.round(Number(match[0])*100):null}

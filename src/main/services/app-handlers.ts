@@ -14,7 +14,7 @@ import type { ContentStatus } from '../domain/content-status'
 import { generateForContent } from './generation-service'
 import { produceContentPackage } from './agent-service'
 import type { AgentPlatform } from '../providers/content-agent'
-import { clearChat, getAiConfig, listAiModels, listChatMessages, saveAiConfig, sendChatMessage, testAiConnection } from './ai-service'
+import { clearChat, getAiConfig, listAiModels, listChatMessages, saveAiConfig, sendChatMessage, suggestPromotion, testAiConnection } from './ai-service'
 import { attemptPublish, createSchedule, listSchedule } from './scheduling-service'
 import { approveAdDraft, listAdAccounts, listAdDrafts, removeAdAccount, saveAdAccount, saveAdDraft } from './ad-service'
 import type { adCapabilitySchema, adProviderSchema } from '../../shared/contracts'
@@ -71,6 +71,7 @@ export function registerAppHandlers(): void {
   registerValidatedHandler('ai:testConnection',()=>testAiConnection())
   registerValidatedHandler('ai:listChat',()=>listChatMessages())
   registerValidatedHandler('ai:sendChat',({content}:{content:string})=>sendChatMessage(content))
+  registerValidatedHandler('ai:suggestPromotion',({goal}:{goal:string})=>suggestPromotion(goal))
   registerValidatedHandler('ai:clearChat',()=>({cleared:clearChat()}))
   registerValidatedHandler('ai:listModels',()=>listAiModels())
   registerValidatedHandler('schedule:list',()=>listSchedule())

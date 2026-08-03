@@ -1,9 +1,10 @@
 import { lookup } from 'node:dns/promises'
 import { isIP } from 'node:net'
 import { saveRecord } from './data-service'
-import { parseMenuPage, type MenuPreviewItem } from '../domain/menu-page-parser'
+import { detectMenuProvider, parseMenuPage, type MenuPreviewItem, type MenuProvider } from '../domain/menu-page-parser'
 
 const MAX_BYTES=2*1024*1024
+const providerLabels:Record<MenuProvider,string>={clover:'Clover',square:'Square',slice:'Slice',toast:'Toast',other:'Public menu'}
 
 function isPrivateAddress(address:string):boolean{
   const normalized=address.toLowerCase().replace(/^::ffff:/,'')
@@ -44,9 +45,9 @@ async function fetchMenuPage(raw:string):Promise<{html:string;url:string}>{
   throw new Error('The menu URL redirected too many times.')
 }
 
-export async function previewMenuUrl(url:string):Promise<{sourceUrl:string;items:MenuPreviewItem[];message:string}>{
-  const page=await fetchMenuPage(url),items=parseMenuPage(page.html)
-  return {sourceUrl:page.url,items,message:items.length?`Found ${items.length} possible menu item${items.length===1?'':'s'}. Review every item before importing.`:'No menu items were found automatically. This site may load its menu only after JavaScript runs.'}
+export async function previewMenuUrl(url:string):Promise<{sourceUrl:string;provider:MenuProvider;providerLabel:string;items:MenuPreviewItem[];message:string}>{
+  const page=await fetchMenuPage(url),provider=detectMenuProvider(page.url),providerLabel=providerLabels[provider],items=parseMenuPage(page.html)
+  return {sourceUrl:page.url,provider,providerLabel,items,message:items.length?`${providerLabel} menu found: ${items.length} possible item${items.length===1?'':'s'}. Review names and prices before importing.`:`No menu items were found on this ${providerLabel} page. Make sure the URL opens the public ordering menu—not the account dashboard—and try again.`}
 }
 
 export function importMenuItems(items:Array<{name:string;description:string;priceCents:number;currency:string}>):{imported:number}{

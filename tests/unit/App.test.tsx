@@ -10,6 +10,7 @@ describe('desktop app shell', () => {
       if (channel === 'app:getInfo') return { ok: true, data: { name: 'Pizza Promo Pro', version: '0.1.0', online: true, platform: 'test' } }
       if (channel === 'updates:getStatus') return { ok: true, data: { state: 'unavailable', currentVersion: '0.1.0', availableVersion: null, progressPercent: null, message: 'Update checks are available in installed builds.' } }
       if (channel === 'ai:getConfig') return { ok: true, data: { provider: 'local_mock', model: 'local-deterministic-v1', endpoint: '', hasApiKey: false, liveEnabled: false, updatedAt: 0 } }
+      if (channel === 'ai:suggestPromotion') return {ok:true,data:{name:'Tuesday Family Pizza Night',description:'Pair a large cheese pizza with a family add-on at a value you approve.',couponCode:'TUESDAY',terms:'Tuesdays only during the dates shown. Cannot be combined with other offers.',rationale:'A clear weekday occasion is easy to explain.',provider:'local_mock',model:'local-deterministic-v1'}}
       if (channel === 'onboarding:getStatus') return { ok: true, data: { shouldShow: false, dismissed: false, completionPercent: 50, essentialComplete: true, steps: [
         {id:'business',label:'Business profile',status:'complete',description:'Shop facts',target:'businesses'},{id:'location',label:'Store location',status:'complete',description:'Address and hours',target:'locations'},{id:'brand',label:'Brand profile',status:'complete',description:'Voice',target:'brandProfiles'},{id:'menu',label:'Menu facts',status:'complete',description:'Menu',target:'menuItems'},
         {id:'ai',label:'AI content provider',status:'optional',description:'AI',target:'settings'},{id:'organicConnections',label:'Social accounts',status:'optional',description:'Social',target:'settings'},{id:'mediaProvider',label:'Higgsfield media provider',status:'optional',description:'Media',target:'settings'},{id:'adAccounts',label:'Advertising account',status:'optional',description:'Ads',target:'ads'}] } }
@@ -96,6 +97,20 @@ describe('desktop app shell', () => {
     expect(await screen.findByText('What are you working on?')).toBeVisible()
     expect(screen.getByText('Human control stays on')).toBeVisible()
     expect(screen.getByPlaceholderText(/Ask about content/i)).toBeVisible()
+  })
+
+  it('places an editable AI copilot inside promotion creation',async()=>{
+    render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
+    fireEvent.click(screen.getByRole('button',{name:'Promotions'}))
+    fireEvent.click(await screen.findByRole('button',{name:'Add promotion'}))
+    expect(screen.getByText('Promotion copilot')).toBeVisible()
+    fireEvent.change(screen.getByPlaceholderText(/Bring families in/),{target:{value:'Bring families in on a slow Tuesday night'}})
+    fireEvent.click(screen.getByRole('button',{name:'Suggest promotion'}))
+    expect(await screen.findByText('Tuesday Family Pizza Night')).toBeVisible()
+    fireEvent.click(screen.getByRole('button',{name:'Use this idea'}))
+    expect(screen.getByDisplayValue('Tuesday Family Pizza Night')).toBeVisible()
+    expect(screen.getByDisplayValue('TUESDAY')).toBeVisible()
+    expect(screen.getByDisplayValue(/Tuesdays only/)).toBeVisible()
   })
 
   it('keeps paid-media drafting separate from live launch authority', async () => {

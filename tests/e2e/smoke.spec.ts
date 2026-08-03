@@ -64,6 +64,23 @@ test('launches the desktop application and renders its first window', async () =
     await expect(window.getByText('Warm and direct')).toBeVisible()
     await expect(window.getByText(/UNIQUE constraint failed/i)).toHaveCount(0)
 
+    await window.getByRole('button',{name:'Menu'}).click()
+    await window.getByRole('button',{name:'Add menu'}).click()
+    await window.getByLabel('Item name').fill('Classic Cheese Pizza')
+    await window.getByLabel('Description').fill('House sauce and mozzarella')
+    await window.getByLabel('Price in cents').fill('1950')
+    await window.getByRole('button',{name:'Create record'}).click()
+    await expect(window.getByText('Classic Cheese Pizza')).toBeVisible()
+
+    await window.getByRole('button',{name:'Promotions'}).click()
+    await window.getByRole('button',{name:'Add promotion'}).click()
+    await window.getByPlaceholder(/Bring families in/).fill('Bring families in on a slow Tuesday night')
+    await window.getByRole('button',{name:'Suggest promotion'}).click()
+    await expect(window.getByText('Classic Cheese Pizza night')).toBeVisible()
+    await window.getByRole('button',{name:'Use this idea'}).click()
+    await expect(window.getByLabel('Promotion name')).toHaveValue('Classic Cheese Pizza night')
+    await expect(window.getByLabel('Customer terms')).not.toHaveValue('')
+
     const appPath = await electronApp.evaluate(({ app }) => app.getAppPath())
     expect(appPath).toBeTruthy()
   } finally {

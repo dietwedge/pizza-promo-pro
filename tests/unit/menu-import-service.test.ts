@@ -2,9 +2,16 @@ import { describe,expect,it,vi } from 'vitest'
 
 vi.mock('electron',()=>({app:{getPath:()=>process.cwd()}}))
 
-import { parseMenuPage } from '../../src/main/domain/menu-page-parser'
+import { detectMenuProvider, parseMenuPage } from '../../src/main/domain/menu-page-parser'
 
 describe('menu page extraction',()=>{
+  it('identifies supported ordering storefront URLs without trusting lookalike domains',()=>{
+    expect(detectMenuProvider('https://shop.cloveronline.com/menu/all')).toBe('clover')
+    expect(detectMenuProvider('https://pizzeria.square.site/s/order')).toBe('square')
+    expect(detectMenuProvider('https://www.slicelife.com/restaurants/ny/pizza/menu')).toBe('slice')
+    expect(detectMenuProvider('https://order.toasttab.com/online/pizza')).toBe('toast')
+    expect(detectMenuProvider('https://toasttab.com.attacker.example/menu')).toBe('other')
+  })
   it('extracts reviewable Schema.org menu items without inventing missing prices',()=>{
     const html=`<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"MenuItem","name":"Margherita Pizza","description":"Tomato, mozzarella &amp; basil","offers":{"price":"14.99","priceCurrency":"USD"}},{"@type":"MenuItem","name":"Market Price Special","description":"Ask the shop"}]}</script>`
     expect(parseMenuPage(html)).toEqual([

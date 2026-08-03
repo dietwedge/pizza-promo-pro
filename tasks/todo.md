@@ -451,3 +451,22 @@ Review:
 - A live, non-mutating proof against the supplied URL returns 85 available items. `Classic Cheese Pizza` is extracted with its full description and a 1,950-cent price.
 - Unavailable entries are omitted, null prices remain unverified, malformed framework payloads are ignored, and the existing Schema.org and visible HTML paths remain intact.
 - Type checks, lint, 62 automated tests, the isolated-profile Electron test, Windows packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.
+
+## Stage sixteen — provider-aware menu import and promotion copilot
+
+- [x] Present Clover, Square, Slice, and Toast as supported public menu sources with automatic provider detection.
+- [x] Preserve the generic public-menu fallback and give provider-specific, actionable preview results.
+- [x] Add parser coverage for storefront-shaped structured and embedded menu data without executing third-party code.
+- [x] Add an AI promotion copilot inside the promotion creation and editing workflow.
+- [x] Ground suggestions in saved business, menu, and brand facts and require explicit user application and save.
+- [x] Add contract, service, renderer, and Electron regression coverage.
+- [x] Update architecture, security, and customer-facing documentation.
+- [x] Run all verification gates, package the Windows installer, commit, and publish.
+
+Review:
+
+- The menu importer now identifies exact Clover, Square, Slice, and Toast storefront hosts and keeps independent public menu pages available through the same review-first workflow. Lookalike domains remain generic.
+- Clover uses its bounded public Next.js payload; supported storefronts also benefit from Schema.org and conservative visible-price extraction. Missing prices remain blank, and account-level continuous synchronization remains separate from this credential-free URL import.
+- Promotion creation and editing now contain a focused AI copilot. It uses the configured customer-owned provider—including Ollama—or the offline mock, grounds menu references in saved facts, and only fills the editable form after the customer chooses “Use this idea.”
+- The copilot cannot choose dates, save the promotion, create content, or publish. Exact value, dates, terms, application, and record saving remain human-controlled.
+- Type checks, lint, 64 automated tests, the expanded isolated-profile Electron test, Windows packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.
