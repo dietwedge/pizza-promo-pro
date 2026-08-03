@@ -64,6 +64,27 @@ describe('desktop app shell', () => {
     expect(await screen.findByText('Connected to Higgsfield. 4 tools available; no tools were run.')).toBeVisible()
   })
 
+  it('requires a Higgsfield cost estimate before supervised generation',async()=>{
+    const item={id:'11111111-1111-4111-8111-111111111111',title:'Friday special',brief:'Create a warm overhead photograph of our Friday pizza special.',status:'draft',updated_at:1,variants:[],generationJobs:[]}
+    const invokeMock=vi.fn(async(channel:string)=>{
+      if(channel==='app:getInfo')return {ok:true,data:{name:'Pizza Promo Pro',version:'0.1.0',online:true,platform:'test'}}
+      if(channel==='onboarding:getStatus')return {ok:true,data:{shouldShow:false,dismissed:true,completionPercent:100,essentialComplete:true,steps:[]}}
+      if(channel==='content:listStudio')return {ok:true,data:[item]}
+      if(channel==='media:estimateHiggsfield')return {ok:true,data:{provider:'higgsfield',kind:'image',model:'gpt_image_2',modelLabel:'GPT Image 2',aspectRatio:'1:1',credits:7,settings:{}}}
+      if(channel==='media:generateHiggsfield')return {ok:true,data:{status:'completed',requiresReview:true}}
+      return {ok:true,data:[]}
+    })
+    Object.defineProperty(window,'pizzaSocial',{configurable:true,value:{invoke:invokeMock}})
+    render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
+    fireEvent.click(screen.getByRole('button',{name:'Content'}))
+    fireEvent.click(await screen.findByRole('button',{name:'Create with Higgsfield'}))
+    expect(screen.queryByRole('button',{name:/Approve prompt/})).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button',{name:'Check Higgsfield cost'}))
+    const approve=await screen.findByRole('button',{name:'Approve prompt & use 7 credits'})
+    fireEvent.click(approve)
+    await waitFor(()=>expect(invokeMock).toHaveBeenCalledWith('media:generateHiggsfield',expect.objectContaining({contentItemId:item.id,maxCredits:7,confirmSpend:true,confirmReview:true})))
+  })
+
   it('provides a dedicated supervised AI chat workspace', async () => {
     render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
     fireEvent.click(screen.getByRole('button', { name: 'AI Assistant' }))

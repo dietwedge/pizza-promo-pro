@@ -22,6 +22,8 @@ import { generateSampleAnalytics, getAnalyticsOverview } from './analytics-servi
 import { getOnboardingStatus, setOnboardingDismissed } from './onboarding-service'
 import { checkForAppUpdate, downloadAppUpdate, getUpdateStatus, installAppUpdate } from './update-service'
 import { connectHiggsfield, getHiggsfieldStatus, selectHiggsfieldWorkspace } from './higgsfield-cli-service'
+import { estimateHiggsfieldMedia, generateHiggsfieldMedia } from './higgsfield-generation-service'
+import { openMediaForReview } from './media-review-service'
 
 export function registerAppHandlers(): void {
   registerValidatedHandler('app:getInfo', () => ({
@@ -53,6 +55,9 @@ export function registerAppHandlers(): void {
   registerValidatedHandler('content:transition', ({ contentItemId, to, notes }: { contentItemId: string; to: ContentStatus; notes?: string }) => transitionContent(contentItemId, to, notes))
   registerValidatedHandler('content:updateVariant', ({ variantId, copy }: { variantId: string; copy: string }) => updateContentVariant(variantId, copy))
   registerValidatedHandler('media:generateForContent', ({ contentItemId, prompt }: { contentItemId: string; prompt: string }) => generateForContent(contentItemId, prompt))
+  registerValidatedHandler('media:estimateHiggsfield', (input:{prompt:string;kind:'image'|'video';aspectRatio:'1:1'|'4:5'|'9:16'|'16:9'}) => estimateHiggsfieldMedia(input))
+  registerValidatedHandler('media:generateHiggsfield', (input:{contentItemId:string;prompt:string;kind:'image'|'video';aspectRatio:'1:1'|'4:5'|'9:16'|'16:9';maxCredits:number;confirmSpend:true;confirmReview:true}) => generateHiggsfieldMedia(input))
+  registerValidatedHandler('media:openForReview', ({mediaAssetId}:{mediaAssetId:string}) => openMediaForReview(mediaAssetId))
   registerValidatedHandler('agent:producePackage', ({ objective, platforms }: { objective: string; platforms: AgentPlatform[] }) => produceContentPackage(objective, platforms))
   registerValidatedHandler('ai:getConfig',()=>getAiConfig())
   registerValidatedHandler('ai:saveConfig',(input:{provider:'local_mock'|'openai'|'openai_compatible'|'ollama';model:string;endpoint?:string;apiKey?:string})=>saveAiConfig(input))

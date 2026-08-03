@@ -25,6 +25,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md), [DATABASE.md](DATABASE.md), and [SECURIT
 
 - Customer-owned AI providers, Ollama, supervised chat, and grounded content production
 - Secure organic social setup, official Higgsfield browser login and workspace selection, plus advanced custom MCP verification
+- Supervised Higgsfield image/video generation with live credit estimates, explicit spend confirmation, protected local downloads, and human review
 - Persistent scheduling with supervised mock publishing and retry history
 - Platform proofing desk with editable variants, character counters, factual-risk warnings, and approval locks
 - Unified organic and paid performance reporting with source, freshness, spend, conversion, and return labels
@@ -44,7 +45,7 @@ Live organic publishing and live advertising mutations remain disabled until eac
 - Unit, IPC integration, and Electron smoke tests
 - Cross-platform packaging configuration and CI build matrix
 
-Live Higgsfield generation, live social publishing, production analytics, signing, and notarization are explicitly out of scope. Official Higgsfield OAuth account connection, workspace selection, GitHub Release updates, and read-only custom MCP verification are implemented.
+Live social publishing, production analytics collection, signing, and notarization are explicitly out of scope. Official Higgsfield OAuth connection and supervised image/video generation are implemented; every paid job requires a live credit estimate and explicit customer confirmation, and outputs remain review-only.
 
 ## Development
 

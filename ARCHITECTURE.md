@@ -49,7 +49,7 @@ Modules separate domain logic, persistence, IPC handlers, and UI concerns. Cross
 
 ## Provider interfaces
 
-`MediaGenerationProvider` is provider-neutral. Milestone one supplies `MockMediaGenerationProvider`. A main-process Streamable HTTP client can initialize the saved Higgsfield MCP endpoint and discover its advertised tools, but it cannot execute them; live generation remains reserved for a later, supervised provider adapter.
+`MediaGenerationProvider` is provider-neutral. The mock provider remains available for deterministic testing. The supervised Higgsfield path uses fixed catalog-backed GPT Image 2 and Seedance 2.0 profiles, obtains a live credit estimate, requires an explicit maximum-credit confirmation, then runs the official CLI and downloads the result into application-controlled storage. Jobs and outputs use the existing persistence tables and always return content to human review. The advanced Streamable HTTP client remains discovery-only and never executes custom MCP tools.
 
 `SocialPublisher` is provider-neutral, with one future adapter per platform. Milestone one supplies `MockSocialPublisher`. Publishing requires approval by default, an idempotency key, and a persisted attempt/result record.
 

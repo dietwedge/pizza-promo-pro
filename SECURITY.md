@@ -42,6 +42,8 @@ The connection center stores encrypted tokens in `credentials.secure.json` under
 
 Official Higgsfield account authentication is delegated to Higgsfield's bundled CLI using OAuth 2.0 PKCE. Pizza Promo Pro executes only login, workspace-list, workspace-select, and account-status commands with fixed arguments and bounded output. It never invokes the CLI token command, reads Higgsfield's credential file, or exposes OAuth credentials to the renderer.
 
+Higgsfield generation accepts only validated image/video profiles and fixed model identifiers. The main process obtains a live credit estimate and refuses generation unless the customer confirms that maximum and acknowledges review. Downloaded results must use HTTPS, match the expected media family, remain under 150 MB, and are checksummed into protected local storage. Opening an asset for review requires a database ID and a containment check under the application media directory.
+
 Customer-owned AI keys use the same credential vault. AI requests run only from the main process with validated HTTPS or localhost endpoints, bounded timeouts, and redirects disabled. Chat receives a factual context package and has no IPC capability for approval, scheduling, publishing, filesystem access, or credentials.
 
 ## Publishing safeguards

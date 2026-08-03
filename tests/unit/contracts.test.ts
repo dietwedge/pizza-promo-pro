@@ -29,6 +29,13 @@ describe('IPC contracts', () => {
     expect(()=>ipcContracts['higgsfield:connect'].request.parse({accessToken:'secret'})).toThrow()
   })
 
+  it('requires explicit Higgsfield spend and review confirmation',()=>{
+    const input={contentItemId:crypto.randomUUID(),prompt:'Approved visual brief for a pizza special',kind:'image',aspectRatio:'1:1',maxCredits:7,confirmSpend:true,confirmReview:true}
+    expect(ipcContracts['media:generateHiggsfield'].request.parse(input)).toEqual(input)
+    expect(()=>ipcContracts['media:generateHiggsfield'].request.parse({...input,confirmSpend:false})).toThrow()
+    expect(()=>ipcContracts['media:generateHiggsfield'].request.parse({...input,confirmReview:false})).toThrow()
+  })
+
   it('rejects unknown AI providers and empty chat messages', () => {
     expect(() => ipcContracts['ai:saveConfig'].request.parse({ provider: 'mystery-ai', model: 'x' })).toThrow()
     expect(() => ipcContracts['ai:sendChat'].request.parse({ content: ' ' })).toThrow()

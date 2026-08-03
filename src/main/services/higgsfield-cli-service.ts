@@ -37,6 +37,52 @@ function parseJson(output: string): unknown {
   return JSON.parse(output.slice(start)) as unknown
 }
 
+export type HiggsfieldGenerationProfile = { kind:'image'|'video'; model:string; settings:Record<string,string|number|boolean> }
+
+export function higgsfieldProfile(kind:'image'|'video',aspectRatio:'1:1'|'4:5'|'9:16'|'16:9'):HiggsfieldGenerationProfile {
+  const normalizedAspect=aspectRatio==='4:5'?'3:4':aspectRatio
+  return kind==='image'
+    ? {kind,model:'gpt_image_2',settings:{aspect_ratio:normalizedAspect,quality:'high',resolution:'2k'}}
+    : {kind,model:'seedance_2_0',settings:{aspect_ratio:normalizedAspect,duration:5,resolution:'720p',mode:'std'}}
+}
+
+export function buildHiggsfieldGenerationArgs(command:'cost'|'create',prompt:string,profile:HiggsfieldGenerationProfile):string[]{
+  const args=['generate',command,profile.model,'--prompt',prompt]
+  for(const [key,value] of Object.entries(profile.settings))args.push(`--${key}`,String(value))
+  if(command==='create')args.push('--wait','--wait-timeout','20m')
+  args.push('--json')
+  return args
+}
+
+export async function estimateHiggsfieldCredits(prompt:string,profile:HiggsfieldGenerationProfile):Promise<number>{
+  const result=await run(buildHiggsfieldGenerationArgs('cost',prompt,profile))
+  const parsed=parseJson(result.stdout)
+  const credits=parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?(parsed as Record<string,unknown>).credits:undefined
+  if(typeof credits!=='number'||!Number.isFinite(credits)||credits<0)throw new Error('Higgsfield did not return a valid credit estimate.')
+  return credits
+}
+
+export function parseHiggsfieldGenerationResult(value:unknown):{remoteUrl:string;providerOutputId?:string}{
+  const visit=(item:unknown):{remoteUrl:string;providerOutputId?:string}|undefined=>{
+    if(Array.isArray(item)){for(const child of item){const found=visit(child);if(found)return found}return undefined}
+    if(!item||typeof item!=='object')return undefined
+    const record=item as Record<string,unknown>,id=record.id??record.job_id??record.jobId
+    for(const key of ['result_url','resultUrl','output_url','outputUrl','url']){
+      if(typeof record[key]==='string'&&/^https:\/\//i.test(record[key]))return {remoteUrl:record[key] as string,providerOutputId:typeof id==='string'?id:undefined}
+    }
+    for(const key of ['outputs','results','data','jobs','result']){const found=visit(record[key]);if(found)return found}
+    return undefined
+  }
+  const found=visit(value)
+  if(!found)throw new Error('Higgsfield completed without returning a downloadable media URL.')
+  return found
+}
+
+export async function generateWithHiggsfield(prompt:string,profile:HiggsfieldGenerationProfile):Promise<{remoteUrl:string;providerOutputId?:string}>{
+  const result=await run(buildHiggsfieldGenerationArgs('create',prompt,profile),21*60_000)
+  return parseHiggsfieldGenerationResult(parseJson(result.stdout))
+}
+
 function workspaceRows(value: unknown): Record<string, unknown>[] {
   if (Array.isArray(value)) return value.filter((item): item is Record<string, unknown> => Boolean(item && typeof item === 'object'))
   if (!value || typeof value !== 'object') return []

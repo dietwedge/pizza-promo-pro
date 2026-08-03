@@ -379,3 +379,24 @@ Review:
 - Signed-out, expired, workspace-required, ready, and connector-error states are represented explicitly. The existing URL/token MCP client remains available as an advanced custom-server integration.
 - The packaged Windows connector was executed directly and correctly reported the current signed-out state with the browser-login instruction.
 - Production dependency audit reports zero vulnerabilities. Type checks, lint, 50 automated tests, the Settings-aware Electron smoke test, and Windows packaging pass.
+
+## Stage twelve — supervised Higgsfield media generation
+
+- [x] Add fixed, validated Higgsfield image and video generation profiles using live catalog defaults.
+- [x] Request a live Higgsfield credit estimate before enabling the paid generation action.
+- [x] Require explicit confirmation of the estimated maximum credits in the IPC request.
+- [x] Run generation through the bundled connector and wait for a terminal result.
+- [x] Download outputs into protected local media storage with HTTPS, redirect, size, MIME, and checksum safeguards.
+- [x] Persist generation jobs, outputs, media assets, failures, and audit events through the existing workflow tables.
+- [x] Keep generated content in review and prevent AI, Higgsfield, or the renderer from approving or publishing it.
+- [x] Add service, contract, UI, and Electron regression coverage.
+- [x] Run all verification gates, update documentation, and package the Windows installer.
+
+Review:
+
+- The authenticated live catalog was inspected before implementation. GPT Image 2 is the image default and Seedance 2.0 is the five-second 720p video default, with square, portrait, vertical, and widescreen formats.
+- Content Studio now opens a visual-brief approval panel, retrieves the actual Higgsfield credit estimate, and reveals the paid action only after that estimate succeeds.
+- The IPC boundary requires literal spend and review confirmations. Generation rechecks the estimate and stops if the price exceeds the amount the customer approved.
+- Completed files are downloaded into protected app storage, checksummed, linked to generation jobs, and exposed through a contained local review action. Content moves to `ready_for_review`, never approved or published.
+- Real, non-billable catalog and cost commands were verified against the connected account. Automated tests never submit paid jobs; the first billed end-to-end proof remains an explicit user action in the installed app.
+- Production dependency audit reports zero vulnerabilities. Type checks, lint, 54 automated tests, the Electron smoke test, and Windows packaging pass.

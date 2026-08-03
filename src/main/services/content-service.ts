@@ -42,7 +42,7 @@ export function createContentDraft(input: DraftInput): Record<string, unknown> {
 function getContentStudioItem(id: string): Record<string, unknown> {
   const database = getDatabase(), item = database.prepare('SELECT * FROM content_items WHERE id = ?').get(id) as Record<string, unknown> | undefined
   if (!item) throw new Error('Content item not found.')
-  return { ...item, variants: database.prepare('SELECT id, platform, copy, metadata_json, updated_at FROM content_variants WHERE content_item_id = ? ORDER BY platform').all(id), generationJobs: database.prepare('SELECT id, provider, model, prompt, status, error_message, completed_at FROM generation_jobs WHERE content_item_id = ? ORDER BY created_at DESC').all(id) }
+  return { ...item, variants: database.prepare('SELECT id, platform, copy, metadata_json, updated_at FROM content_variants WHERE content_item_id = ? ORDER BY platform').all(id), generationJobs: database.prepare('SELECT gj.id, gj.provider, gj.model, gj.prompt, gj.status, gj.error_message, gj.completed_at, go.media_asset_id FROM generation_jobs gj LEFT JOIN generation_outputs go ON go.generation_job_id=gj.id WHERE gj.content_item_id = ? ORDER BY gj.created_at DESC').all(id) }
 }
 
 export function listContentStudio(): Record<string, unknown>[] {
