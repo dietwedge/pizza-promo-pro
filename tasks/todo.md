@@ -470,3 +470,20 @@ Review:
 - Promotion creation and editing now contain a focused AI copilot. It uses the configured customer-owned provider—including Ollama—or the offline mock, grounds menu references in saved facts, and only fills the editable form after the customer chooses “Use this idea.”
 - The copilot cannot choose dates, save the promotion, create content, or publish. Exact value, dates, terms, application, and record saving remain human-controlled.
 - Type checks, lint, 64 automated tests, the expanded isolated-profile Electron test, Windows packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.
+
+## Stage seventeen — visible Higgsfield results
+
+- [x] Reproduce the missing-image workflow from persisted generation jobs and media assets.
+- [x] Trace live Higgsfield completion, download, persistence, and renderer presentation.
+- [x] Render completed images directly on the originating content card with an explicit review action.
+- [x] Show durable progress, useful failure details, and a safe retry path for incomplete jobs.
+- [x] Add service, contract, renderer, and Electron regression coverage.
+- [x] Run all verification gates, package, document, commit, and publish.
+
+Review:
+
+- The reported Higgsfield job completed successfully. Its 10.9 MB PNG, checksum-backed media record, generation output, and ready-for-review content state were all present; the missing result was a renderer presentation defect.
+- Completed images now load on demand through a UUID-only secure bridge and appear directly on the originating Content card with an “Open original” action and explicit review warning.
+- Generated and imported assets now appear persistently in the Media Library. Image previews are inline; video and oversized images retain the protected external review action.
+- Running jobs show durable progress copy, while failed jobs display their saved safe error message and leave the content in a retryable draft state.
+- Type checks, lint, 64 automated tests, an Electron test that persists and renders generated media in both locations, Windows packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.

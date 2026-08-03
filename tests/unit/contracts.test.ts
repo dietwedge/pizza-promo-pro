@@ -35,6 +35,9 @@ describe('IPC contracts', () => {
     expect(()=>ipcContracts['media:generateHiggsfield'].request.parse({...input,confirmSpend:false})).toThrow()
     expect(()=>ipcContracts['media:generateHiggsfield'].request.parse({...input,confirmReview:false})).toThrow()
     expect(()=>ipcContracts['media:generateHiggsfield'].request.parse({...input,model:'untrusted_model'})).toThrow()
+    expect(ipcContracts['media:readPreview'].request.parse({mediaAssetId:crypto.randomUUID()})).toBeTruthy()
+    expect(()=>ipcContracts['media:readPreview'].request.parse({mediaAssetId:'../../secret'})).toThrow()
+    expect(ipcContracts['media:list'].request.parse({})).toEqual({})
   })
 
   it('rejects unknown AI providers and empty chat messages', () => {

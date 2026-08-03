@@ -24,7 +24,7 @@ import { checkForAppUpdate, downloadAppUpdate, getUpdateStatus, installAppUpdate
 import { connectHiggsfield, getHiggsfieldStatus, selectHiggsfieldWorkspace } from './higgsfield-cli-service'
 import { estimateHiggsfieldMedia, generateHiggsfieldMedia, getHiggsfieldMediaModels } from './higgsfield-generation-service'
 import type { HiggsfieldAspectRatio, HiggsfieldModelId } from '../../shared/higgsfield-models'
-import { openMediaForReview } from './media-review-service'
+import { listMediaAssets, openMediaForReview, readMediaPreview } from './media-review-service'
 import { importMenuItems, previewMenuUrl } from './menu-import-service'
 
 export function registerAppHandlers(): void {
@@ -42,6 +42,7 @@ export function registerAppHandlers(): void {
   registerValidatedHandler('data:save', ({ entity, value }: { entity: EntityKind; value: Record<string, unknown> }) => saveRecord(entity, value))
   registerValidatedHandler('data:remove', ({ entity, id }: { entity: EntityKind; id: string }) => { removeRecord(entity, id); return { id } })
   registerValidatedHandler('media:import', () => importMedia())
+  registerValidatedHandler('media:list', () => listMediaAssets())
   registerValidatedHandler('menu:previewUrl', ({url}:{url:string}) => previewMenuUrl(url))
   registerValidatedHandler('menu:importPreview', ({items}:{items:Array<{name:string;description:string;priceCents:number;currency:string}>}) => importMenuItems(items))
   registerValidatedHandler('backup:create', async () => ({ path: await createBackup() }))
@@ -65,6 +66,7 @@ export function registerAppHandlers(): void {
   registerValidatedHandler('media:estimateHiggsfield', (input:{prompt:string;model:HiggsfieldModelId;aspectRatio:HiggsfieldAspectRatio}) => estimateHiggsfieldMedia(input))
   registerValidatedHandler('media:generateHiggsfield', (input:{contentItemId:string;prompt:string;model:HiggsfieldModelId;aspectRatio:HiggsfieldAspectRatio;maxCredits:number;confirmSpend:true;confirmReview:true}) => generateHiggsfieldMedia(input))
   registerValidatedHandler('media:openForReview', ({mediaAssetId}:{mediaAssetId:string}) => openMediaForReview(mediaAssetId))
+  registerValidatedHandler('media:readPreview', ({mediaAssetId}:{mediaAssetId:string}) => readMediaPreview(mediaAssetId))
   registerValidatedHandler('agent:producePackage', ({ objective, platforms }: { objective: string; platforms: AgentPlatform[] }) => produceContentPackage(objective, platforms))
   registerValidatedHandler('ai:getConfig',()=>getAiConfig())
   registerValidatedHandler('ai:saveConfig',(input:{provider:'local_mock'|'openai'|'openai_compatible'|'ollama';model:string;endpoint?:string;apiKey?:string})=>saveAiConfig(input))

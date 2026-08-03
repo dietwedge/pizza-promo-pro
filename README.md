@@ -41,6 +41,7 @@ Live organic publishing and live advertising mutations remain disabled until eac
 
 - Business, location, brand, menu, promotion, and campaign management with edit and delete controls
 - An in-form Promotion Copilot that proposes editable offers from saved menu and brand facts using the customer's selected AI provider or local Ollama
+- Inline review of completed Higgsfield images on the originating content card and in the persistent Media Library
 - Local media importing into application-controlled storage
 - Content workflow and platform-specific variants
 - Calendar shell, settings, and local backup/restore

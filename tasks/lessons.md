@@ -27,3 +27,9 @@
 - A page that displays a client-rendering bailout can still contain complete structured application data in streamed framework payloads.
 - For menu import compatibility, inspect standard structured data, embedded framework state, and visible HTML in that order before adding a heavyweight browser or paid scraping dependency.
 - Maintain provider-shaped parser fixtures for storefronts actually encountered by users, while keeping the import preview untrusted and review-only.
+
+## 2026-08-03 — Generation is not complete until the result is visible
+
+- A successful cost estimate and completed provider job do not make media generation usable by themselves; verify the returned asset is downloaded, persisted, and rendered in the originating workflow.
+- Long-running generation must show a durable job state, a visible result or actionable failure, and a retry/review path after the initiating control stops spinning.
+- Exercise the real provider response shape and local media URL bridge, not only mocked completion records.

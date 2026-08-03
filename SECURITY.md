@@ -48,6 +48,8 @@ Menu URL imports are main-process-only and defend against server-side request fo
 
 Storefront branding is detected only from exact Clover, Square, Slice, and Toast hostnames; lookalike domains remain generic. Public menu import never receives account credentials or grants ongoing provider access. AI promotion suggestions are bounded structured proposals, grounded with local facts, and cannot write promotion records. The customer must apply the suggestion, choose dates and value, review the terms, and explicitly save it through the normal validated data path.
 
+Generated-media previews accept only validated media-asset UUIDs. The main process resolves the database path, proves it remains under the app-controlled media directory, verifies the file exists and is an image, and enforces a 25 MB inline limit before returning a data URL. Arbitrary local paths are never accepted from the renderer. Original files open only through the same protected-path validation.
+
 Customer-owned AI keys use the same credential vault. AI requests run only from the main process with validated HTTPS or localhost endpoints, bounded timeouts, and redirects disabled. Chat receives a factual context package and has no IPC capability for approval, scheduling, publishing, filesystem access, or credentials.
 
 ## Publishing safeguards

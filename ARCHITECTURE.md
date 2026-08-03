@@ -77,6 +77,8 @@ The main process fetches public HTTP/HTTPS menu pages only. It identifies Clover
 
 The Promotion Copilot is a narrow structured-output workflow on top of the configured `AiModelProvider`. It sends the promotion goal plus bounded saved business, menu, and brand facts, validates the returned JSON fields, and displays the result as a proposal. Applying a proposal only fills the local form; it cannot set dates, save a promotion, create content, or publish. The deterministic local provider follows the same apply-and-review interaction without network compute.
 
+Completed generation outputs are joined back onto their originating Content Studio item and also listed in the Media Library. Image previews are read on demand through a validated IPC channel from protected app storage; the renderer never receives an arbitrary filesystem path. Inline previews are capped at 25 MB, while larger images and video remain available through the contained operating-system review action. Failed jobs retain their provider-safe error message and return the content item to a retryable draft state.
+
 ## Local-first behavior
 
 Core planning, editing, review, calendar, and media-library work remains available offline. Features requiring internet access must be identified in the interface. Provider outputs are downloaded to application-controlled local storage before they become media assets.

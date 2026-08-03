@@ -39,6 +39,23 @@ test('launches the desktop application and renders its first window', async () =
     await window.getByRole('button',{name:'Create record'}).click()
     await expect(window.getByText('E2E Pizza Shop')).toBeVisible()
 
+    const draft=await window.evaluate(async()=>{
+      const api=(globalThis as unknown as {pizzaSocial:{invoke:(channel:string,request:unknown)=>Promise<{ok:boolean;data?:{id:string};error?:{message:string}}>} }).pizzaSocial
+      const result=await api.invoke('content:createDraft',{title:'Visible media proof',brief:'Create a reviewable image for the saved pizza promotion.',platforms:['instagram']})
+      if(!result.ok||!result.data)throw new Error(result.error?.message??'Draft setup failed')
+      return result.data
+    })
+    await window.evaluate(async(contentItemId)=>{
+      const api=(globalThis as unknown as {pizzaSocial:{invoke:(channel:string,request:unknown)=>Promise<{ok:boolean;error?:{message:string}}>} }).pizzaSocial
+      const result=await api.invoke('media:generateForContent',{contentItemId,prompt:'A clearly labeled mock pizza image for inline review.'})
+      if(!result.ok)throw new Error(result.error?.message??'Mock media setup failed')
+    },draft.id)
+    await window.getByRole('button',{name:'Content'}).click()
+    await expect(window.getByRole('img',{name:/Generated visual for Visible media proof/})).toBeVisible()
+    await expect(window.getByText('Review this image before approval or publishing.')).toBeVisible()
+    await window.getByRole('button',{name:'Media library'}).click()
+    await expect(window.getByRole('img',{name:/Media library preview for Visible media proof/})).toBeVisible()
+
     await window.getByRole('button',{name:'Locations'}).click()
     await window.getByRole('button',{name:'Add location'}).click()
     await window.getByLabel('Location name').fill('Panorama Plaza')
