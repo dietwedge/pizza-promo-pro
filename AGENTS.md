@@ -6,6 +6,7 @@ Build Pizza Promo Pro as a production-quality, cross-platform Electron applicati
 
 ## Required boundaries
 
+- Pizza Promo Pro is a native Electron desktop application only. Never propose or build a browser edition, PWA, hosted fallback, or web-based replacement.
 - Use Electron main, preload, and renderer processes.
 - Keep `nodeIntegration` disabled and `contextIsolation` enabled.
 - Use sandboxing where compatible.

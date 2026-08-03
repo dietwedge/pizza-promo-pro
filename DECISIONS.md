@@ -2,6 +2,14 @@
 
 This file records accepted decisions. Add new entries rather than silently changing earlier decisions; mark superseded decisions explicitly.
 
+## ADR-014: Native desktop distribution is permanent
+
+**Status:** Accepted
+
+Pizza Promo Pro will remain a native Electron desktop application. A browser edition, progressive web app, hosted trial, or web-based substitute is explicitly outside the product strategy. The marketing website and Square can sell and provision the software, but the product itself is downloaded and runs locally.
+
+Product viability testing must use the native desktop build. Direct website sales and Windows installer trust are separate concerns, and signing or installer-warning decisions must be handled within the desktop distribution strategy rather than by changing platforms.
+
 ## ADR-001: Electron modular monolith
 
 **Status:** Accepted
