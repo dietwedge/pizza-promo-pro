@@ -595,3 +595,21 @@ Review:
 - Content Studio visibly labels the retained source text as “Internal direction,” separating it from the publishable variant grid.
 - The Electron test pastes a plan containing Post Idea, Theme, and Visual Suggestion and proves that none appears in the three generated platform posts.
 - Type checking, linting, 74 automated tests, the Electron end-to-end test, Windows x64 packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.
+
+## Stage twenty-four — creative-intent handoff
+
+- [x] Convert campaign strategy into a structured creative brief alongside final platform copy.
+- [x] Require specific, promotion-led captions and reject generic filler language.
+- [x] Persist creative intent and dedicated image/video prompts with every package.
+- [x] Seed Higgsfield from the matching dedicated visual prompt, never the raw brief or caption.
+- [x] Collapse the long internal direction so finished drafts remain visually primary.
+- [x] Add regression coverage and run the complete release verification.
+
+Review:
+
+- The configured Content Producer now converts strategy into explicit audience, message, tone, call-to-action, and visual-direction fields before returning final captions.
+- The writing contract requires promotion-specific hooks, discourages generic restaurant filler, prevents unrelated saved menu items from leaking into a campaign, and requires standalone image and video production prompts.
+- Creative intent and both media prompts are persisted in existing variant metadata; no database migration was required.
+- Higgsfield now starts from the saved prompt matching Image or Video and falls back to structured visual direction for older packages. It no longer starts from the raw internal brief or a platform caption.
+- Internal direction is limited to a compact three-line preview in the production queue and remains editable through the package editor.
+- Type checking, linting, 75 automated tests, the Electron end-to-end test, Windows x64 packaging, and the production dependency audit pass. The audit reports zero vulnerabilities.

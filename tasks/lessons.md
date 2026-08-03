@@ -63,3 +63,9 @@
 - AI planning output may contain themes, focus notes, caption angles, and visual suggestions; none of that scaffolding belongs in customer-facing platform captions.
 - Content production needs a distinct second writing step with a structured platform-output contract, even when the customer pastes a detailed assistant plan.
 - Validate and reject analysis labels, markdown headings, missing platforms, and over-limit captions before saving any generated package.
+
+## 2026-08-04 — Preserve creative intent across every production handoff
+
+- Separating strategy from captions is incomplete unless the campaign angle, audience, tone, call to action, and visual direction survive as structured metadata.
+- Never initialize a media generator from a social caption or the raw strategy document when a dedicated visual-production prompt exists.
+- A technically valid caption can still be unusably generic; generation contracts and tests must reject filler language and require campaign-specific hooks grounded in the selected promotion and audience.

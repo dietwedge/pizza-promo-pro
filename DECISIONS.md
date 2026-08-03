@@ -91,6 +91,12 @@ Content Producer treats the customer objective or AI Assistant output as interna
 
 Before persistence, generated packages must have exact platform coverage, remain inside platform character limits, require human approval, pass factual-claim validation, and contain no planning scaffolding or markdown headings in titles or captions. Internal strategy remains stored as the editable brief and is visibly labeled as internal direction; it is never a content variant.
 
+### Creative intent is a first-class production artifact
+
+Content generation must also return a structured creative brief containing the audience, core message, tone, call to action, and visual direction. That brief and separate image/video prompts are stored in variant metadata so no schema migration is required and every platform version retains the same campaign provenance.
+
+Media-generation controls must initialize from the prompt matching the selected output type. They may fall back to the structured visual direction for older packages, but must never seed a paid generation from the raw internal strategy or a social caption. The retained internal strategy is visually truncated in the production queue and remains available through the existing editor.
+
 ## ADR-012: Unified, provenance-labelled performance snapshots
 
 **Status:** Accepted

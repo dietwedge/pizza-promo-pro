@@ -67,7 +67,9 @@ describe('desktop app shell', () => {
   })
 
   it('requires a Higgsfield cost estimate before supervised generation',async()=>{
-    const item={id:'11111111-1111-4111-8111-111111111111',title:'Friday special',brief:'Create a warm overhead photograph of our Friday pizza special.',status:'draft',updated_at:1,variants:[],generationJobs:[]}
+    const dedicatedImagePrompt='Overhead Friday-night table with two pizzas, warm practical lighting, red checked paper, and real shop packaging. No rendered offer text.'
+    const dedicatedVideoPrompt='Fast vertical sequence of two pizza boxes opening on a Friday-night table, warm light, authentic packaging, and no rendered offer text.'
+    const item={id:'11111111-1111-4111-8111-111111111111',title:'Friday special',brief:'This raw internal strategy must never become the visual prompt.',status:'draft',updated_at:1,variants:[{id:'variant-1',platform:'facebook',copy:'Friday dinner is handled.',metadata_json:JSON.stringify({mediaPrompts:[{kind:'image',prompt:dedicatedImagePrompt},{kind:'video',prompt:dedicatedVideoPrompt}]})}],generationJobs:[]}
     const referenceId='55555555-5555-4555-8555-555555555555'
     const invokeMock=vi.fn(async(channel:string,request?:unknown)=>{
       if(channel==='app:getInfo')return {ok:true,data:{name:'Pizza Promo Pro',version:'0.1.0',online:true,platform:'test'}}
@@ -84,10 +86,12 @@ describe('desktop app shell', () => {
     render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
     fireEvent.click(screen.getByRole('button',{name:'Content'}))
     fireEvent.click(await screen.findByRole('button',{name:'Create with Higgsfield'}))
+    expect(screen.getByLabelText('Visual prompt')).toHaveValue(dedicatedImagePrompt)
     expect(await screen.findByText('Show Higgsfield what this shop looks like')).toBeVisible()
     fireEvent.click(screen.getByRole('button',{name:'real-shop-pizza.jpg'}))
     expect(await screen.findByRole('option',{name:'Nano Banana 2 Lite · Budget'})).toBeInTheDocument()
     fireEvent.change(screen.getByLabelText('Output'),{target:{value:'video'}})
+    expect(screen.getByLabelText('Visual prompt')).toHaveValue(dedicatedVideoPrompt)
     expect(screen.getByRole('option',{name:'Kling 3.0 Turbo · Budget'})).toBeInTheDocument()
     fireEvent.change(screen.getByLabelText('Output'),{target:{value:'image'}})
     expect(screen.queryByRole('button',{name:/Approve prompt/})).not.toBeInTheDocument()

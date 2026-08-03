@@ -4,7 +4,7 @@ import type { FactSource } from '../../src/main/providers/content-agent'
 import { ConfiguredContentAgent } from '../../src/main/providers/configured-content-agent'
 
 const sources:FactSource[]=[{type:'business',id:'business-1',label:'The Pizza Shoppe',facts:{name:'The Pizza Shoppe'}}]
-const packageJson=(variants:unknown[])=>JSON.stringify({concept:'Friday pizza night',variants,mediaPrompts:[{kind:'image',prompt:'Photograph the real pizza on the saved shop table.'}],suggestedTiming:{rationale:'Confirm against the saved store schedule.',localHour:17}})
+const packageJson=(variants:unknown[])=>JSON.stringify({concept:'Friday pizza night',creativeBrief:{audience:'Neighborhood families',message:'Make Friday dinner easier with the saved promotion',tone:'Friendly and direct',callToAction:'Order for Friday dinner',visualDirection:'An overhead family-table scene with the promoted pizzas, warm evening light, and authentic shop packaging.'},variants,mediaPrompts:[{kind:'image',prompt:'Photograph the real pizza on the saved shop table.'}],suggestedTiming:{rationale:'Confirm against the saved store schedule.',localHour:17}})
 
 describe('configured content-agent output',()=>{
   it('accepts one finished customer-facing caption per requested platform',()=>{
@@ -17,6 +17,10 @@ describe('configured content-agent output',()=>{
   it('rejects assistant planning scaffolding before persistence',()=>{
     expect(()=>parseContentAgentOutput(packageJson([{platform:'facebook',copy:'Post Idea 1: BOGO\n**Theme:** drive immediate sales'}]),['facebook'],'openai','gpt-test',sources)).toThrow(/planning notes/i)
     expect(()=>parseContentAgentOutput(packageJson([{platform:'facebook',copy:'## Caption\nFriday pizza.'}]),['facebook'],'openai','gpt-test',sources)).toThrow(/planning notes/i)
+  })
+
+  it('rejects generic filler that discards the campaign direction',()=>{
+    expect(()=>parseContentAgentOutput(packageJson([{platform:'facebook',copy:'Get ready for the most delicious deal in town!'}]),['facebook'],'openai','gpt-test',sources)).toThrow(/generic promotional filler/i)
   })
 
   it('rejects missing, duplicate, and over-limit platform output',()=>{

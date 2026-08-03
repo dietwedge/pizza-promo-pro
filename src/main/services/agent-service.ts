@@ -33,9 +33,9 @@ export async function produceContentPackage(objective:string,platforms:AgentPlat
   try {
     database.prepare('INSERT INTO content_items (id, business_id, promotion_id, title, brief, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(id,business.id,sourcePromotion?.id??null,result.concept.slice(0,140),objective,'draft',now,now)
     const insert=database.prepare('INSERT INTO content_variants (id, content_item_id, platform, copy, metadata_json, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
-    for(const variant of result.variants) insert.run(randomUUID(),id,variant.platform,variant.copy,JSON.stringify({generatedBy:result.provider,sources:result.sources.map(({type,id,label})=>({type,id,label})),mediaPrompts:result.mediaPrompts,suggestedTiming:result.suggestedTiming,requiresHumanApproval:true}),now,now)
+    for(const variant of result.variants) insert.run(randomUUID(),id,variant.platform,variant.copy,JSON.stringify({generatedBy:result.provider,sources:result.sources.map(({type,id,label})=>({type,id,label})),creativeBrief:result.creativeBrief,mediaPrompts:result.mediaPrompts,suggestedTiming:result.suggestedTiming,requiresHumanApproval:true}),now,now)
     database.exec('COMMIT')
   } catch(error){database.exec('ROLLBACK');throw error}
   audit('agent.content_package.created','content_items',id,{provider:result.provider,platforms:result.variants.map((variant)=>variant.platform),sourceIds:result.sources.map((source)=>source.id),requiresHumanApproval:true})
-  return {contentItemId:id,provider:result.provider,concept:result.concept,variantCount:result.variants.length,mediaPrompts:result.mediaPrompts,suggestedTiming:result.suggestedTiming,sources:result.sources.map(({type,id,label})=>({type,id,label})),status:'draft',requiresHumanApproval:true}
+  return {contentItemId:id,provider:result.provider,concept:result.concept,creativeBrief:result.creativeBrief,variantCount:result.variants.length,mediaPrompts:result.mediaPrompts,suggestedTiming:result.suggestedTiming,sources:result.sources.map(({type,id,label})=>({type,id,label})),status:'draft',requiresHumanApproval:true}
 }
